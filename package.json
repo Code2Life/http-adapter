@@ -1,0 +1,63 @@
+{
+  "name": "http-adaptor",
+  "version": "1.0.0",
+  "description": "http-adaptor",
+  "main": "app.js",
+  "scripts": {
+    "start": "node -r ts-node/register src/main.ts",
+    "dev": "cross-env DEBUG=server:* nodemon -r ts-node/register src/main.ts",
+    "dev_start": "cross-env DEBUG=server:* node -r ts-node/register src/main.ts",
+    "lint": "tslint -p tsconfig.json",
+    "build": "tslint -p tsconfig.json && tsc -p tsconfig.json",
+    "test": "jest --verbose --detectOpenHandles"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Code2Life/http-adaptor.git"
+  },
+  "keywords": [
+    "webhook",
+    "adaptor",
+    "relay",
+    "transform"
+  ],
+  "author": "Code2Life",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Code2Life/http-adaptor/issues"
+  },
+  "homepage": "https://github.com/Code2Life/http-adaptor#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "debug": "^4.1.1",
+    "js-yaml": "^3.13.1",
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-onerror": "^4.1.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "koa2-cors": "^2.0.6",
+    "lodash": "^4.17.11",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.3",
+    "@types/jest": "^24.0.11",
+    "@types/js-yaml": "^3.12.1",
+    "@types/koa": "^2.0.48",
+    "@types/koa-bodyparser": "^4.2.2",
+    "@types/koa-router": "^7.0.40",
+    "@types/koa-static": "^4.0.1",
+    "@types/koa2-cors": "^2.0.1",
+    "@types/lodash": "^4.14.123",
+    "@types/node": "^11.13.4",
+    "@types/uuid": "^3.4.4",
+    "cross-env": "^5.2.0",
+    "jest": "^24.7.1",
+    "nodemon": "^1.18.11",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.0.3",
+    "tslint": "^5.15.0",
+    "typescript": "^3.4.3"
+  }
+}

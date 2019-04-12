@@ -7,6 +7,7 @@
     "start": "node -r ts-node/register src/main.ts",
     "dev": "cross-env DEBUG=server:* nodemon -r ts-node/register src/main.ts",
     "dev_start": "cross-env DEBUG=server:* node -r ts-node/register src/main.ts",
+    "dist_start": "npm run build && node dist/main.js",
     "lint": "tslint -p tsconfig.json",
     "build": "tslint -p tsconfig.json && tsc -p tsconfig.json",
     "test": "jest --verbose --detectOpenHandles"

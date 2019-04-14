@@ -19,6 +19,7 @@ export default class RouterManager {
     const layer = this.router.register(conf.location, [conf.method], async (ctx, next) => {
       ctx.reqId = uuid.v4();
       ctx.startTime = Date.now();
+      debug(`${ctx.reqId}: ${ctx.method} ${ctx.url} at ${ctx.startTime}`);
       if (conf.hostname && (ctx.request.hostname !== conf.hostname)) {
         debug(`${ctx.reqId}: skip routing because hostname not match.`);
         return next();

@@ -3,9 +3,9 @@ import fs from 'fs';
 import { safeLoad } from 'js-yaml';
 import Router from 'koa-router';
 import path from 'path';
-import { AdaptorConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair } from '../model';
 import { TSCompiler } from '../compiler/mini-compiler';
 import { ConfigManager } from '../manager/conf-manager';
+import { AdaptorConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair } from '../model';
 
 const debug = Debug('server:conf-loader');
 
@@ -141,20 +141,20 @@ export default class ConfLoader {
   }
 
   async loadSingleFunctionCode(target: string, parentDirectory: string) {
-    if (target && target.endsWith('.js')) {
+    let funcBody = target;
+    if (target && (target.endsWith('.js') || target.endsWith('.ts'))) {
       let buffer = await fs.promises.readFile(path.join(parentDirectory, target));
-      return buffer.toString().trim();
-    } else if (target && target.endsWith('.ts')) {
-      let buffer = await fs.promises.readFile(path.join(parentDirectory, target));
-      let output = TSCompiler.transformTS(buffer.toString().trim());
-      if (output.diagnostics && output.diagnostics.length > 0) {
-        console.log('warn or error from TS compiler: ' + JSON.stringify(output.diagnostics));
-      }
-      if (!output.outputText) {
-        throw new Error('error/no-output when loading TS source file: ' + target);
-      }
-      return output.outputText;
+      funcBody = buffer.toString().trim();
     }
-    return target.trim();
+    // parse TS/JS function using TS Compiler
+    let output = TSCompiler.transformTS(funcBody);
+    if (output.diagnostics && output.diagnostics.length > 0) {
+      console.log('warn or error from TS compiler: ' + JSON.stringify(output.diagnostics));
+    }
+    if (!output.outputText) {
+      throw new Error('error/no-output when loading TS source file: ' + target);
+    }
+    return output.outputText;
   }
+
 }

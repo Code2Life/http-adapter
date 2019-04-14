@@ -80,6 +80,6 @@ export class FunctionResolver {
       console.error(syntaxErr);
       throw new Error('syntax error - ' + key);
     }
-    ctxRunEnv.setPropertyToRunTime(prefix + key, tmpFunction);
+    ctxRunEnv.setPropertyToRunTime(prefix + key, tmpFunction.bind(ctxRunEnv));
   }
 }

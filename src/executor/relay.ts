@@ -22,7 +22,7 @@ export class RelayStage extends Executor<void> {
         headers: Object.assign({}, headers),
         data: body
       };
-      console.log(`processing relay request (${name}): ${sendMethod} ${url}`);
+      debug(`${ctx.reqId}: processing relay request (${name}) - ${sendMethod} ${url}`);
 
       // step1, replace template in url, body and header
       let tmplReplaceFuncURL = (<FuncSet>runtime)[constants.RELAY_PROP_TEMPLATE_FUNC_PREFIX + cnt + constants.URL_PROP_SUFFIX];

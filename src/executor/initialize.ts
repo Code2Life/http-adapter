@@ -11,19 +11,20 @@ const debug = Debug('server:initialize-stage');
 export class InitializeStage extends Executor<void> {
 
   public async execute(): Promise<void> {
-    await this.generateInitialContext();
-    this.generateExtractStageFunctions();
-    this.generateRelayStageFunctions();
-    this.generateResponseStageFunctions();
-    debug('finish initialize runtime context for :' + this.envConf.name);
+    try {
+      await this.generateInitialContext();
+      this.generateExtractStageFunctions();
+      this.generateRelayStageFunctions();
+      this.generateResponseStageFunctions();
+      debug('finish initialize runtime context for :' + this.envConf.name);
+    } catch (ex) {
+      console.error('context initialization error of ' + this.envConf.name, ex);
+      this.ctxRunEnv.appendError(ex);
+      throw ex;
+    }
   }
 
   private async generateInitialContext() {
-    // init constants
-    const runtimeConst = this.envConf.initContext.constants;
-    for (let key in runtimeConst) {
-      this.ctxRunEnv.setPropertyToRunTime(key, runtimeConst[key]);
-    }
     // install and load libs, make env, generate variables
     await ModuleResolver.loadAndInitDependencies(this.envConf.initContext.libraries, this.ctxRunEnv);
     TemplateResolver.compileTemplateObjToFunction(this.envConf.initContext.constants,
@@ -31,17 +32,38 @@ export class InitializeStage extends Executor<void> {
     FunctionResolver.compileAndLoadFunctionObj(this.envConf.initContext.initFunctions,
       this.ctxRunEnv, constants.INIT_FUNC_PREFIX);
     FunctionResolver.compileAndLoadFunctionObj(this.envConf.initContext.functions, this.ctxRunEnv);
-    // call initFunctions
+    // call initTemplates and initFunctions, to initialize constants and context
     await this.invokeInitFunctions();
   }
 
   private async invokeInitFunctions() {
+    const initConstants = this.envConf.initContext.constants;
     const initFunctions = this.envConf.initContext.initFunctions;
+
     const runtime = this.ctxRunEnv.getRunTimeEnv();
-    for (let funcName in initFunctions) {
-      let tmpFunc = (<FuncSet>runtime)[constants.INIT_CONTEXT_TEMPLATE_FUNC_PREFIX + funcName];
+    for (let constName in initConstants) {
+      let tmpFunc = (<FuncSet>runtime)[constants.INIT_CONTEXT_TEMPLATE_FUNC_PREFIX + constName];
       if (typeof tmpFunc === 'function') {
-        await tmpFunc();
+        try {
+          this.ctxRunEnv.setPropertyToRunTime(constName, tmpFunc());
+        } catch (ex) {
+          ex.message = `error when initialize context (${this.envConf.name}): ${ex.message}`;
+          this.ctxRunEnv.appendError(ex);
+          console.error(ex);
+        }
+        debug(`finish execute init constant ${constName} for context ${this.envConf.name}`);
+      }
+    }
+    for (let funcName in initFunctions) {
+      let tmpFunc = (<FuncSet>runtime)[constants.INIT_FUNC_PREFIX + funcName];
+      if (typeof tmpFunc === 'function') {
+        try {
+          await tmpFunc();
+        } catch (ex) {
+          ex.message = `error when initialize context (${this.envConf.name}): ${ex.message}`;
+          this.ctxRunEnv.appendError(ex);
+          console.error(ex);
+        }
         debug(`finish execute init function ${funcName} for context ${this.envConf.name}`);
       }
     }

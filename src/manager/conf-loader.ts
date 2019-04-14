@@ -4,7 +4,7 @@ import { safeLoad } from 'js-yaml';
 import Router from 'koa-router';
 import path from 'path';
 import { TSCompiler } from '../compiler/mini-compiler';
-import { ConfigManager } from '../manager/conf-manager';
+import { ConfigManager } from './conf-manager';
 import { AdaptorConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair } from '../model';
 
 const debug = Debug('server:conf-loader');
@@ -27,15 +27,19 @@ export default class ConfLoader {
           await this.loadFromFiles(fullPath);
         } else if (subPath.endsWith('.yaml')) {
           debug('load conf from %s', fullPath);
-          const buffer = await fs.promises.readFile(fullPath);
-          const rawObj: AdaptorConfig = safeLoad(buffer.toString());
-          const validObj = this.validateRawConf(rawObj, directory, subPath);
-          const compiledObj = await this.loadRelatedCodeFiles(validObj, directory);
-          ConfigManager.addConfig(compiledObj);
+          try {
+            const buffer = await fs.promises.readFile(fullPath);
+            const rawObj: AdaptorConfig = safeLoad(buffer.toString());
+            const validObj = this.validateRawConf(rawObj, directory, subPath);
+            const compiledObj = await this.loadRelatedCodeFiles(validObj, directory);
+            await ConfigManager.addConfig(compiledObj);
+          } catch (err) {
+            console.error(`fail to load configuration of ${fullPath}`, err);
+          }
         }
       }
     } catch (ex) {
-      console.error('fail to load configuration: ', ex);
+      console.error(`fail to load configuration`, ex);
     }
   }
 

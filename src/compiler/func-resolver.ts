@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import ts from 'typescript';
 import { KVPair } from '../model';
-import { RunTimeEnvironment } from '../executor/runtime';
+import { RunTimeEnvironment } from '../runtime/context';
 import { TSCompiler } from './mini-compiler';
 
 const debug = Debug('server:func-resolver');
@@ -29,7 +29,7 @@ export class FunctionResolver {
       if (node.kind === ts.SyntaxKind.FunctionDeclaration) {
         ts.forEachChild(node, child => {
           // strip function block
-          debug(ts.SyntaxKind[child.kind]);
+          // debug(ts.SyntaxKind[child.kind]);
           if (child.kind === ts.SyntaxKind.Block) {
             let func = child.getText();
             compiledFunc = func.substring(1, func.length - 1);
@@ -42,23 +42,28 @@ export class FunctionResolver {
         });
       } else if (node.kind === ts.SyntaxKind.ExpressionStatement || node.kind === ts.SyntaxKind.BinaryExpression) {
         ts.forEachChild(node, child => {
-          debug(ts.SyntaxKind[child.kind]);
+          // debug(ts.SyntaxKind[child.kind]);
           if (child.kind === ts.SyntaxKind.ArrowFunction) {
             // strip block in arrow function
+            let hasBlock = false;
             ts.forEachChild(child, arrowFunc => {
-              debug('    ' + ts.SyntaxKind[arrowFunc.kind]);
+              // debug('    ' + ts.SyntaxKind[arrowFunc.kind]);
               if (arrowFunc.kind === ts.SyntaxKind.Block) {
                 let func = arrowFunc.getText();
                 compiledFunc = func.substring(1, func.length - 1);
+                hasBlock = true;
                 totalCount++;
-              } else if (arrowFunc.kind === ts.SyntaxKind.BinaryExpression) {
-                compiledFunc = 'return ' + arrowFunc.getText();
               } else if (arrowFunc.kind === ts.SyntaxKind.Parameter) {
                 param.push(arrowFunc.getChildAt(0).getText());
               } else if (arrowFunc.kind === ts.SyntaxKind.AsyncKeyword) {
                 isAsync = true;
               }
             });
+            // no block '{}' in arrow function body, it's an expression
+            if (!hasBlock) {
+              compiledFunc = 'return ' + child.getText().split('=>').slice(1).join('=>').trim();
+              totalCount++;
+            }
           }
         });
       }

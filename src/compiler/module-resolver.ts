@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import Debug from 'debug';
 import path from 'path';
 import { KVPair } from '../model';
-import { RunTimeEnvironment } from '../executor/runtime';
+import { RunTimeEnvironment } from '../runtime/context';
 
 const debug = Debug('server:compiler:module-resolver');
 const MAX_INSTALL_TIME = 60000;

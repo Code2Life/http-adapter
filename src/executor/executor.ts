@@ -1,6 +1,6 @@
 import { Context } from 'koa';
 import { AdaptorConfig } from '../model';
-import { RunTimeEnvironment } from './runtime';
+import { RunTimeEnvironment } from '../runtime/context';
 
 export abstract class Executor<T> {
 

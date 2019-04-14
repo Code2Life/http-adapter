@@ -10,7 +10,8 @@
       "name": "Debug",
       "env": {
         "NODE_ENV": "development",
-        "DEBUG": "server:*"
+        "DEBUG": "server:*",
+        "CONF_PATH": "./adaptors-dev"
       },
       "runtimeArgs": [
           "-r",

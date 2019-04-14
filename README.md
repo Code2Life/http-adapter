@@ -43,6 +43,7 @@ todo
 - TODO
 
 ## Todo
+- document template grammar, and allow separate template file
 - configure UI and REST interface
 - documents and TS/JS/YAML configuration templates
 - plugin system, and plugin development

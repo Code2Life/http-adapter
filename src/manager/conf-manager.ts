@@ -5,8 +5,20 @@ export class ConfigManager {
 
   public static allConf: Map<string, AdaptorConfig> = new Map();
 
-  public static addConfig(conf: AdaptorConfig) {
+  public static async addConfig(conf: AdaptorConfig) {
+    if (this.allConf.has(conf.name)) {
+      throw new Error('Can not add configuration with existing name');
+    }
     this.allConf.set(conf.name, conf);
+    await RouterManager.addRouterFromConf(conf);
+  }
+
+  public static updateConfig(conf: AdaptorConfig) {
+    if (!this.allConf.has(conf.name)) {
+      throw new Error('Can not update configuration with none-existing name');
+    }
+    this.allConf.set(conf.name, conf);
+    RouterManager.deleteRouteByName(conf.name);
     RouterManager.addRouterFromConf(conf);
   }
 

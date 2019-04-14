@@ -1,6 +1,5 @@
 import Debug from 'debug';
 import Router from 'koa-router';
-import uuid from 'uuid';
 import ContextDirector from '../executor/director';
 import { AdaptorConfig } from '../model';
 
@@ -9,44 +8,24 @@ const debug = Debug('server:router');
 export default class RouterManager {
 
   public static router = new Router();
+  public static routerMap = new Map<string, Router.Layer>();
+  public static directorMap = new Map<string, ContextDirector>();
 
   public static async addRouterFromConf(conf: AdaptorConfig) {
     // initialize context runtime
     const director = new ContextDirector(conf);
     await director.initialize();
-
     // register to router
-    const layer = this.router.register(conf.location, [conf.method], async (ctx, next) => {
-      ctx.reqId = uuid.v4();
-      ctx.startTime = Date.now();
-      debug(`${ctx.reqId}: ${ctx.method} ${ctx.url} at ${ctx.startTime}`);
-      if (conf.hostname && (ctx.request.hostname !== conf.hostname)) {
-        debug(`${ctx.reqId}: skip routing because hostname not match.`);
-        return next();
-      }
-      // different template method for different resp policy
-      let valid = await director.extractFromRequest(ctx);
-      if (!valid) {
-        // 400 bad request
-        ctx.response.status = 400;
-        return;
-      }
-      if (conf.response.policy === 'immediate') {
-        await director.composeResponse(ctx);
-        await next();
-        await director.relayRequests(ctx);
-      } else {
-        await director.relayRequests(ctx);
-        await director.composeResponse(ctx);
-        await next();
-      }
-      debug(`${ctx.reqId}: done in ${Date.now() - ctx.startTime} ms`);
-    });
+    const layer = this.router.register(conf.location, [conf.method], director.handler);
     layer.name = conf.name;
+    this.routerMap.set(layer.name, layer);
+    this.directorMap.set(layer.name, director);
     debug('finish initialize routing layer.');
   }
 
   public static deleteRouteByName(name: string) {
-    // todo
+    this.router.delete(name);
+    this.routerMap.delete(name);
+    this.directorMap.delete(name);
   }
 }

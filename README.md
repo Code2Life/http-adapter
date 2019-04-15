@@ -1,5 +1,5 @@
 ## http-adaptor
-A extensible HTTP adapter and request relay platform. 
+A lightweight and extensible HTTP adapter, editable HTTP server, Webhook transformation, request relay platform.
 
 Just route, filter, validate, transform, relay and response your HTTP requests.
 
@@ -8,9 +8,12 @@ Setup your HTTP server in 3 minutes by a few YAML configurations and a few TS/JS
 - HTTP adaptor, such as transform webhook request to another
 - request relay, it could be HTTP proxy for another server
 - mock server, it could be a mock server if no relay configurations set
-- develop dynamic HTTP interface, BFF(backend for frontend)
+- dynamic HTTP interface, as BFF(backend for frontend) or API Gateway
 
 ## Demo
+todo
+
+## Architecture
 todo
 
 ## Quick Start

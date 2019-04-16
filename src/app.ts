@@ -8,7 +8,7 @@ import ConfLoader from './manager/conf-loader';
 import RouterManager from './manager/route-manager';
 
 const METRICS_TIMEOUT = 5000;
-const METRICS_PREFIX = 'http_adaptor_';
+const METRICS_PREFIX = 'http_adapter_';
 
 const app = new Koa();
 const router = RouterManager.router;
@@ -32,7 +32,7 @@ app.use(router.allowedMethods());
 
 // load existing configurations from directory
 const loader = new ConfLoader(router);
-loader.loadFromFiles(process.env.CONF_PATH || path.resolve(__dirname, '../adaptors'));
+loader.loadFromFiles(process.env.CONF_PATH || path.resolve(__dirname, '../adapters'));
 
 console.log('server started.');
 

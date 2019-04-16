@@ -1,11 +1,11 @@
 {
-  "name": "http-adaptor",
+  "name": "http-adapter",
   "version": "1.0.0",
-  "description": "http-adaptor",
+  "description": "http-adapter",
   "main": "app.js",
   "scripts": {
     "start": "node -r ts-node/register src/main.ts",
-    "dev": "cross-env CONF_PATH=./adaptors-dev DEBUG=server:* nodemon -r ts-node/register src/main.ts",
+    "dev": "cross-env CONF_PATH=./adapters-dev DEBUG=server:* nodemon -r ts-node/register src/main.ts",
     "dev_start": "cross-env DEBUG=server:* node -r ts-node/register src/main.ts",
     "dist_start": "npm run build && node dist/main.js",
     "lint": "tslint -p tsconfig.json",
@@ -14,20 +14,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Code2Life/http-adaptor.git"
+    "url": "git+https://github.com/Code2Life/http-adapter.git"
   },
   "keywords": [
     "webhook",
-    "adaptor",
+    "adapter",
     "relay",
     "transform"
   ],
   "author": "Code2Life",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Code2Life/http-adaptor/issues"
+    "url": "https://github.com/Code2Life/http-adapter/issues"
   },
-  "homepage": "https://github.com/Code2Life/http-adaptor#readme",
+  "homepage": "https://github.com/Code2Life/http-adapter#readme",
   "dependencies": {
     "axios": "^0.18.0",
     "debug": "^4.1.1",

@@ -5,7 +5,7 @@ import Router from 'koa-router';
 import path from 'path';
 import { TSCompiler } from '../compiler/mini-compiler';
 import { ConfigManager } from './conf-manager';
-import { AdaptorConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair } from '../model';
+import { AdapterConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair } from '../model';
 
 const debug = Debug('server:conf-loader');
 
@@ -29,7 +29,7 @@ export default class ConfLoader {
           debug('load conf from %s', fullPath);
           try {
             const buffer = await fs.promises.readFile(fullPath);
-            const rawObj: AdaptorConfig = safeLoad(buffer.toString());
+            const rawObj: AdapterConfig = safeLoad(buffer.toString());
             const validObj = this.validateRawConf(rawObj, directory, subPath);
             const compiledObj = await this.loadRelatedCodeFiles(validObj, directory);
             await ConfigManager.addConfig(compiledObj);
@@ -46,7 +46,7 @@ export default class ConfLoader {
   /**
    * @remarks validate and set default values, because yaml could be invalid
    */
-  validateRawConf(rawObj: AdaptorConfig, parentDirectory: string, path: string): AdaptorConfig {
+  validateRawConf(rawObj: AdapterConfig, parentDirectory: string, path: string): AdapterConfig {
     // validate and set default value for main fields
     if (!rawObj.name || !rawObj.location)  {
       throw new Error(`no name or location for this config: ${parentDirectory}/${path}`);
@@ -108,7 +108,7 @@ export default class ConfLoader {
     return rawObj;
   }
 
-  async loadRelatedCodeFiles(confObj: AdaptorConfig, parentDirectory: string): Promise<AdaptorConfig> {
+  async loadRelatedCodeFiles(confObj: AdapterConfig, parentDirectory: string): Promise<AdapterConfig> {
     await this.loadCodeInConf(confObj.initContext.initFunctions, parentDirectory);
     await this.loadCodeInConf(confObj.initContext.functions, parentDirectory);
     for (let handler of confObj.extract.headerHandlers) {

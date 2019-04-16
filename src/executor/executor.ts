@@ -1,13 +1,13 @@
 import { Context } from 'koa';
-import { AdaptorConfig } from '../model';
+import { AdapterConfig } from '../model';
 import { RunTimeEnvironment } from '../runtime/context';
 
 export abstract class Executor<T> {
 
-  protected envConf: AdaptorConfig;
+  protected envConf: AdapterConfig;
   protected ctxRunEnv: RunTimeEnvironment;
 
-  constructor(envConf: AdaptorConfig, ctxRunEnv: RunTimeEnvironment) {
+  constructor(envConf: AdapterConfig, ctxRunEnv: RunTimeEnvironment) {
     this.envConf = envConf;
     this.ctxRunEnv = ctxRunEnv;
   }

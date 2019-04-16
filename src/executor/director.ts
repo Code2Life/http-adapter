@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import { Context } from 'koa';
-import { AdaptorConfig } from '../model';
+import { AdapterConfig } from '../model';
 import { RunTimeEnvironment } from '../runtime/context';
 import { ExtractStage } from './extract';
 import { InitializeStage } from './initialize';
@@ -14,14 +14,14 @@ export default class ContextDirector {
 
 
   private ctxRunEnv: RunTimeEnvironment;
-  private envConf: AdaptorConfig;
+  private envConf: AdapterConfig;
 
   private initializeStage: InitializeStage;
   private extractStage: ExtractStage;
   private relayStage: RelayStage;
   private responseStage: ResponseStage;
 
-  constructor(conf: AdaptorConfig) {
+  constructor(conf: AdapterConfig) {
     this.envConf = conf;
     this.ctxRunEnv = new RunTimeEnvironment(conf);
     this.initializeStage = new InitializeStage(this.envConf, this.ctxRunEnv);

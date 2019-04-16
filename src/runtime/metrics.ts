@@ -1,5 +1,5 @@
 import { Counter, Gauge, Summary } from 'prom-client';
-import { AdaptorConfig } from '../model';
+import { AdapterConfig } from '../model';
 
 interface MetricsInfo {
   total: Counter;
@@ -18,7 +18,7 @@ class RunTimeMetrics {
     this.initMetrics();
   }
 
-  public triggerMetrics(conf: AdaptorConfig, timestamp: number, cost: number) {
+  public triggerMetrics(conf: AdapterConfig, timestamp: number, cost: number) {
     this.envMetrics.total.labels(conf.name, conf.location).inc(1, timestamp);
     this.envMetrics.lastDuration.labels(conf.name, conf.location).set(cost, timestamp);
     this.envMetrics.avgLatency.labels(conf.name, conf.location).observe(cost);

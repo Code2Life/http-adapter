@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import Router from 'koa-router';
 import ContextDirector from '../executor/director';
-import { AdaptorConfig } from '../model';
+import { AdapterConfig } from '../model';
 
 const debug = Debug('server:router');
 
@@ -11,7 +11,7 @@ export default class RouterManager {
   public static routerMap = new Map<string, Router.Layer>();
   public static directorMap = new Map<string, ContextDirector>();
 
-  public static async addRouterFromConf(conf: AdaptorConfig) {
+  public static async addRouterFromConf(conf: AdapterConfig) {
     // initialize context runtime
     const director = new ContextDirector(conf);
     await director.initialize();

@@ -11,7 +11,7 @@
       "env": {
         "NODE_ENV": "development",
         "DEBUG": "server:*",
-        "CONF_PATH": "./adaptors-dev"
+        "CONF_PATH": "./adapters-dev"
       },
       "runtimeArgs": [
           "-r",

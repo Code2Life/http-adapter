@@ -1,11 +1,11 @@
-## http-adaptor
+## http-adapter
 A lightweight and extensible HTTP adapter, editable HTTP server, Webhook transformation, request relay platform.
 
 Just route, filter, validate, transform, relay and response your HTTP requests.
 
 Setup your HTTP server in 3 minutes by a few YAML configurations and a few TS/JS code snippets.
 **Especially** suitable for:
-- HTTP adaptor, such as transform webhook request to another
+- HTTP adapter, such as transform webhook request to another
 - request relay, it could be HTTP proxy for another server
 - mock server, it could be a mock server if no relay configurations set
 - dynamic HTTP interface, as BFF(backend for frontend) or API Gateway
@@ -22,11 +22,11 @@ todo
 temporary unavailable, developing
 ```bash
 # by NPM
-npm install -g http-adaptor
-http-adaptor -p 3001
+npm install -g http-adapter
+http-adapter -p 3001
 
 # by Docker
-docker run --restart always -p 3000:3000 -d --name http-adaptor code2life/http-adaptor
+docker run --restart always -p 3000:3000 -d --name http-adapter code2life/http-adapter
 
 # by Kubernetes
 deployment-content-link

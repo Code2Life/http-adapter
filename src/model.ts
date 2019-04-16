@@ -1,4 +1,4 @@
-export interface AdaptorConfig {
+export interface AdapterConfig {
   name: string;
   hostname?: string;
   location: string;

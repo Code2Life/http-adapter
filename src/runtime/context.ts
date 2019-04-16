@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { AdaptorConfig } from '../model';
+import { AdapterConfig } from '../model';
 import { ContextMetrics } from './metrics';
 
 const debug = Debug('server:runtime-ctx');
@@ -14,11 +14,11 @@ const MAX_RESERVE_ERRORS = 100;
 
 export class RunTimeEnvironment {
 
-  private envConf: AdaptorConfig;
+  private envConf: AdapterConfig;
   private envErrors: ErrorInfo[];
   private runContext: Object = {};
 
-  constructor(conf: AdaptorConfig) {
+  constructor(conf: AdapterConfig) {
     this.envConf = conf;
     this.envErrors = [];
     this.setPropertyToRunTime('_envConf', this.envConf);

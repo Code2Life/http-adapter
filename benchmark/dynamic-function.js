@@ -30,8 +30,8 @@ for (let c = 0;c < 1000;c++) {
 console.log('duration: ' + (Date.now() - start) + ' ms');
 
 // * new Function call stack
-// at eval (eval at <anonymous> (***http-adaptor/benchmark/dynamic-function.js:18:4), <anonymous>:3:49)
-// at Object.<anonymous> (***http-adaptor/benchmark/dynamic-function.js:18:26)
+// at eval (eval at <anonymous> (***http-adapter/benchmark/dynamic-function.js:18:4), <anonymous>:3:49)
+// at Object.<anonymous> (***http-adapter/benchmark/dynamic-function.js:18:26)
 // at Module._compile (internal/modules/cjs/loader.js:721:30)
 // at Object.Module._extensions..js (internal/modules/cjs/loader.js:732:10)
 // at Module.load (internal/modules/cjs/loader.js:620:32)
@@ -41,8 +41,8 @@ console.log('duration: ' + (Date.now() - start) + ' ms');
 // at executeUserCode (internal/bootstrap/node.js:499:15)
 
 // * eval call stack
-// at eval (eval at <anonymous> (***http-adaptor/benchmark/dynamic-function.js:15:3), <anonymous>:1:49)
-// at Object.<anonymous> (***http-adaptor/benchmark/dynamic-function.js:15:3)
+// at eval (eval at <anonymous> (***http-adapter/benchmark/dynamic-function.js:15:3), <anonymous>:1:49)
+// at Object.<anonymous> (***http-adapter/benchmark/dynamic-function.js:15:3)
 // at Module._compile (internal/modules/cjs/loader.js:721:30)
 // at Object.Module._extensions..js (internal/modules/cjs/loader.js:732:10)
 // at Module.load (internal/modules/cjs/loader.js:620:32)
@@ -51,4 +51,4 @@ console.log('duration: ' + (Date.now() - start) + ' ms');
 // at Function.Module.runMain (internal/modules/cjs/loader.js:774:12)
 // at executeUserCode (internal/bootstrap/node.js:499:15)
 // at startMainThreadExecution (internal/bootstrap/node.js:436:3)
-// ➜  http-adaptor git:(master) ✗ 
+// ➜  http-adapter git:(master) ✗ 

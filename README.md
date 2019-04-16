@@ -14,7 +14,7 @@ Setup your HTTP server in 3 minutes by a few YAML configurations and a few TS/JS
 todo
 
 ## Architecture
-![](http://filecdn.code2life.top/http-adapter-architecture.png)
+![](http://filecdn.code2life.top/http-adapter-architecture-v2.png)
 
 ## Quick Start
 

@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/http-adapter
+    docker:
+      - image: circleci/node:10.15.3
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: test-with-coverage
+          command: npm run test_prod
+      - run:
+          name: webpack-build
+          command: npm run build_prod

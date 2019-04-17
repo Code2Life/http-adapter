@@ -22,8 +22,8 @@ jobs:
           path: test-result
       - store_artifacts:
           path: test-result
-      - store_artifacts:
-          path: dist
       - run:
           name: webpack-build
           command: npm run build_prod
+      - store_artifacts:
+          path: dist

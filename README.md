@@ -58,6 +58,7 @@ todo
 ## Todo
 - document template grammar, and allow separate template file
 - configure UI and REST interface
+- separate RuntimeContext with AdapterConfig (1 -> N)
 - documents and TS/JS/YAML configuration templates
 - plugin system, and plugin development
 - routing incoming websocket message

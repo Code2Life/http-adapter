@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import fs from 'fs';
+import { fs } from 'mz';
 import { safeLoad } from 'js-yaml';
 import Router from 'koa-router';
 import path from 'path';
@@ -18,17 +18,16 @@ export default class ConfLoader {
 
   async loadFromFiles(directory: string): Promise<void> {
     try {
-      const paths = await fs.promises.readdir(directory);
+      const paths = await fs.readdir(directory);
       for (let subPath of paths) {
-        // fs.promises.fstat()
         const fullPath = path.join(directory, subPath);
-        const stat = await fs.promises.lstat(fullPath);
+        const stat = await fs.lstat(fullPath);
         if (stat.isDirectory()) {
           await this.loadFromFiles(fullPath);
         } else if (subPath.endsWith('.yaml')) {
           debug('load conf from %s', fullPath);
           try {
-            const buffer = await fs.promises.readFile(fullPath);
+            const buffer = await fs.readFile(fullPath);
             const rawObj: AdapterConfig = safeLoad(buffer.toString());
             const validObj = this.validateRawConf(rawObj, directory, subPath);
             const compiledObj = await this.loadRelatedCodeFiles(validObj, directory);
@@ -63,7 +62,7 @@ export default class ConfLoader {
     }
     // init default libraries
     rawObj.initContext.libraries = Object.assign({
-      _: 'lodash',
+      lodash: '_',
       axios: 'axios'
     }, rawObj.initContext.libraries);
     rawObj.initContext.constants = rawObj.initContext.constants || {};
@@ -147,7 +146,7 @@ export default class ConfLoader {
   async loadSingleFunctionCode(target: string, parentDirectory: string) {
     let funcBody = target;
     if (target && (target.endsWith('.js') || target.endsWith('.ts'))) {
-      let buffer = await fs.promises.readFile(path.join(parentDirectory, target));
+      let buffer = await fs.readFile(path.join(parentDirectory, target));
       funcBody = buffer.toString().trim();
     }
     // parse TS/JS function using TS Compiler

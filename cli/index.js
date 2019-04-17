@@ -1,15 +1,42 @@
 const fs = require('fs');
 const zlib = require('zlib');
 const http = require('http');
+const https = require('https');
 const { fork } = require('child_process');
 
 const CDN_BASE = 'http://filecdn.code2life.top';
-const SERVER_FILE = 'http-adapter.js';
+const SERVER_FILE_PREFIX = 'http-adapter-';
+const VERSION_URL = 'https://raw.githubusercontent.com/Code2Life/http-adapter/master/package.json';
+const SERVER_PACKAGE = './http-adapter-server-package.json';
 
-/**
- * TODO params validation, deliver, pre-load adapters
- * version control, server file cache based on MD5
- */
+let SERVER_FILE = '';
+
+async function startApplication(options) {
+  if (valid(options)) {
+    try {
+      process.env.NODE_PORT = options.port;
+      process.env.CONF_PATH = __dirname + '/adapters';
+      process.env.DEBUG = options.debug ? 'server:*' : '';
+      
+      const designatedVersion = options['server-version'];
+      if (!designatedVersion) {
+        await setTargetVersionNumber();
+      } else {
+        SERVER_FILE = SERVER_FILE_PREFIX + designatedVersion + '.js';
+        console.log(`User specify the version: ${SERVER_FILE}`);
+      }
+      
+      await downloadPreInstalledConf();
+      await downloadServerCodeAndStart();
+    } catch (ex) {
+      console.error(ex);
+      process.exit(1);
+    }
+  } else {
+    console.error('Invalid options!');
+    process.exit(1);
+  }
+}
 
 function valid(options) {
   const port = +options.port;
@@ -20,52 +47,87 @@ function valid(options) {
   return true;
 }
 
-function startApplication(options) {
-  if(valid(options)) {
-    try {
-      process.env.NODE_PORT = options.port;
-      process.env.CONF_PATH = __dirname + '/adapters';
-      process.env.DEBUG = options.debug ? 'server:*' : '';
-      let exists = fs.existsSync(SERVER_FILE);
-      let conf = fs.existsSync(process.env.CONF_PATH);
-      if (!conf) {
-        fs.mkdirSync(process.env.CONF_PATH);
-      }
-      if (exists) {
-        startServer();
+function setTargetVersionNumber() {
+  return new Promise((resolve, reject) => {
+    https.get(VERSION_URL, {} , res => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`Can not fetch latest version source repo, status: ${res.statusCode}`));
         return;
       }
-      http.get(`${CDN_BASE}/${SERVER_FILE}` , { headers: { 'Accept-Encoding': 'gzip' }}, (res) => {
-        if (res.statusCode !== 200) {
-          console.error(`Can not download server file from CDN, status: ${res.statusCode}`);
-          return;
-        }
-        if (res.headers['content-encoding'].indexOf('gzip') !== -1) {
-          res.pipe(zlib.createGunzip()).pipe(fs.createWriteStream(SERVER_FILE));
-        } else {
-          res.pipe(fs.createWriteStream(SERVER_FILE));
-        }
-        res.on('end', () => {
-          startServer();
-        });
+      let total = Buffer.from('');
+      res.on('data', buffer => {
+        total += buffer;
       });
-    } catch(ex) {
-      console.error(ex);
-      process.exit(1);
+      res.on('end', () => {
+        fs.writeFileSync(SERVER_PACKAGE, total.toString()); 
+        let version = require(SERVER_PACKAGE).version
+        console.log(`Got latest version info: ${version}`);
+        SERVER_FILE = SERVER_FILE_PREFIX + version + '.js';
+        resolve();
+      });
+      res.on('error', err => {
+        reject(err);
+      });
+    })
+  });
+}
+
+function downloadPreInstalledConf() {
+  return new Promise((resolve, reject) => {
+    let conf = fs.existsSync(process.env.CONF_PATH);
+    if (!conf) {
+      console.log(`No configurations found, initialize configurations`);
+      fs.mkdirSync(process.env.CONF_PATH);
+      // todo download initial configurations as demo at first time
     }
-  } else {
-    console.error('Invalid options!');
-    process.exit(1);
-  }
+    resolve();
+  });
+}
+
+function downloadServerCodeAndStart() {
+  return new Promise((resolve, reject) => {
+    let exists = fs.existsSync(SERVER_FILE);
+    if (exists) {
+      console.log(`${SERVER_FILE} has already been there, start server directly`);
+      startServer();
+      resolve();
+      return;
+    }
+    console.log(`${SERVER_FILE} not found, download from CDN`);
+    http.get(`${CDN_BASE}/${SERVER_FILE}`, { headers: { 'Accept-Encoding': 'gzip' } }, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`Can not download server file (${CDN_BASE}/${SERVER_FILE}) from CDN, status: ${res.statusCode}`));
+        return;
+      }
+      if (res.headers['content-encoding'].indexOf('gzip') !== -1) {
+        res.pipe(zlib.createGunzip()).pipe(fs.createWriteStream(SERVER_FILE));
+      } else {
+        res.pipe(fs.createWriteStream(SERVER_FILE));
+      }
+      res.on('end', () => {
+        console.log(`${SERVER_FILE} downloaded, start server now`);
+        startServer();
+        resolve();
+      });
+      res.on('error', err => {
+        reject(err);
+      });
+    });
+  });
 }
 
 function startServer() {
-  let server = fork('http-adapter.js', [], {
+  let server = fork(SERVER_FILE, [], {
     stdio: 'inherit'
   });
   server.on('exit', (code, signal) => {
-    console.log(`server exited: ${code} ${signal || ''}.`);
+    console.log(`Server process exited: ${code} ${signal || ''}.`);
     process.exit(code);
+  });
+  server.on('error', err => {
+    console.error('Got Error from server process', err);
+    // server.kill('SIGKILL');
+    process.exit(1);
   });
 }
 

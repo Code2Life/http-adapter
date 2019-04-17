@@ -1,13 +1,17 @@
 {
   "name": "node-adapter-cli",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "CLI tool for node-adapter module https://github.com/Code2Life/http-adapter.git",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "pub": "rm -rf http-adapter* adapters && npm publish"
   },
   "bin": {
     "http-adapter": "./bin/node-adapter-cli"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   },
   "author": "Code2Life",
   "license": "Apache-2.0",

@@ -10,6 +10,11 @@ let argv = yargs.usage('Usage: $0 <options>')
   describe: 'Server port. \n' + 'usage: -p/--port 3000'.green,
   default: 3000
 })
+.option('s', {
+  alias: 'server-version',
+  describe: 'select certain server version (using latest version by default: https://raw.githubusercontent.com/Code2Life/http-adapter/master/package.json) . \n' + 'usage: -s/--server-version x.x.x'.green,
+  default: ''
+})
 .option('d', {
   alias: 'debug',
   describe: 'Debug mode . \n' + 'usage: -d/--debug true'.green,

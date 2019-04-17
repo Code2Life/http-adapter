@@ -2,21 +2,19 @@
   "name": "node-adapter",
   "version": "1.0.1",
   "description": "A lightweight and extensible HTTP adapter, editable HTTP server, Webhook transformation, request relay platform. based on koa",
-  "main": "src/main.ts",
+  "main": "dist/http-adapter.js",
   "scripts": {
     "start": "node -r ts-node/register src/main.ts",
-    "test": "cross-env JEST_JUNIT_OUTPUT=test-result/result.xml jest --verbose --detectOpenHandles",
+    "test": "jest --verbose --detectOpenHandles",
     "test_prod": "cross-env JEST_JUNIT_OUTPUT=test-result/result.xml jest --verbose --bail --ci --runInBand --reporters=default --reporters=jest-junit --detectOpenHandles --coverage && codecov --token=2d13016a-614b-4266-8f83-aeffbece3d61",
     "dev": "cross-env CONF_PATH=./adapters-dev DEBUG=server:* nodemon -r ts-node/register src/main.ts",
     "dev_start": "cross-env DEBUG=server:* node -r ts-node/register src/main.ts",
     "dist_start": "npm run build && node dist/main.js",
+    "dist_min_start": "node dist/http-adapter.js",
     "lint": "tslint -p tsconfig.json",
     "build": "tslint -p tsconfig.json && tsc -p tsconfig.json",
     "build_prod": "tslint -p tsconfig.json && webpack --config webpack.config.js --progress --color",
     "doc": "compodoc -p tsconfig.json -d docs"
-  },
-  "engines": {
-    "node": ">= 8.0.0"
   },
   "repository": {
     "type": "git",
@@ -46,11 +44,10 @@
     "koa-static": "^5.0.0",
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.11",
-    "mz": "^2.7.0",
     "prom-client": "^11.3.0",
-    "ts-node": "^8.0.3",
+    "uuid": "^3.3.2",
     "typescript": "^3.4.3",
-    "uuid": "^3.3.2"
+    "ts-node": "^8.0.3"
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.6",
@@ -63,7 +60,6 @@
     "@types/koa-static": "^4.0.1",
     "@types/koa2-cors": "^2.0.1",
     "@types/lodash": "^4.14.123",
-    "@types/mz": "0.0.32",
     "@types/node": "^11.13.4",
     "@types/uuid": "^3.4.4",
     "clean-webpack-plugin": "^0.1.19",

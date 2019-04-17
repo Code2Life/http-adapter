@@ -37,7 +37,7 @@ module.exports = {
     nodeEnv: 'production',
   },
   output: {
-    filename: `http-adapter.js`,
+    filename: `http-adapter-${version}.js`,
     path: path.resolve(__dirname, './dist')
   }
 };

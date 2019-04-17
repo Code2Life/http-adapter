@@ -5,7 +5,7 @@ import { KVPair } from '../model';
 import { RunTimeEnvironment } from '../runtime/context';
 
 const debug = Debug('server:compiler:module-resolver');
-const MAX_INSTALL_TIME = 60000;
+const MAX_INSTALL_TIME = 120000;
 
 export class ModuleResolver {
 

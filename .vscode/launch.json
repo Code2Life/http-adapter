@@ -29,7 +29,7 @@
       "protocol": "inspector",
       "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
       "args": [
-        "telnet-handler.test.ts"
+        "module-resolver.test.ts"
       ],
       "cwd": "${workspaceFolder}"
     }

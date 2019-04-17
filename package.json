@@ -1,16 +1,20 @@
 {
   "name": "http-adapter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "http-adapter",
   "main": "app.js",
   "scripts": {
     "start": "node -r ts-node/register src/main.ts",
+    "test": "jest --verbose --detectOpenHandles",
+    "coverage": "jest --coverage --detectOpenHandles --verbose",
     "dev": "cross-env CONF_PATH=./adapters-dev DEBUG=server:* nodemon -r ts-node/register src/main.ts",
     "dev_start": "cross-env DEBUG=server:* node -r ts-node/register src/main.ts",
     "dist_start": "npm run build && node dist/main.js",
+    "dist_min_start": "node dist/http-adaptor-1.0.1.js",
     "lint": "tslint -p tsconfig.json",
     "build": "tslint -p tsconfig.json && tsc -p tsconfig.json",
-    "test": "jest --verbose --detectOpenHandles"
+    "build_prod": "tslint -p tsconfig.json && webpack --config webpack.config.js --progress --color",
+    "doc": "compodoc -p tsconfig.json -d docs"
   },
   "repository": {
     "type": "git",
@@ -45,6 +49,7 @@
     "ts-node": "^8.0.3"
   },
   "devDependencies": {
+    "@compodoc/compodoc": "^1.1.6",
     "@types/debug": "^4.1.3",
     "@types/jest": "^24.0.11",
     "@types/js-yaml": "^3.12.1",
@@ -56,10 +61,15 @@
     "@types/lodash": "^4.14.123",
     "@types/node": "^11.13.4",
     "@types/uuid": "^3.4.4",
+    "clean-webpack-plugin": "^0.1.19",
     "cross-env": "^5.2.0",
     "jest": "^24.7.1",
     "nodemon": "^1.18.11",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.15.0"
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.15.0",
+    "webpack": "^4.26.0",
+    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-cli": "^3.1.2"
   }
 }

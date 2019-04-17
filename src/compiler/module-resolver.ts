@@ -13,8 +13,8 @@ export class ModuleResolver {
   private static installedModuleCache = new Map<string, boolean>();
 
   public static async loadAndInitDependencies(libraries: KVPair, ctxRunEnv: RunTimeEnvironment) {
-    for (let alias in libraries) {
-      let moduleName = libraries[alias];
+    for (let moduleName in libraries) {
+      let alias = libraries[moduleName];
       let moduleObj = {};
       if (this.errorModuleCache.has(moduleName)) {
         console.error('server refuse to load none-existing or wrong module again');
@@ -48,25 +48,18 @@ export class ModuleResolver {
       } catch (ex) {
         // none-existing or something error with the module
         const cwd = path.resolve(__dirname, '../../node_modules');
-        exec('npm uninstall ' + moduleName, { cwd }, (err, stdout, stderr) => {
-          debug(stdout);
-          console.log(`finish uninstall before install ${moduleName}`);
+        // install module with timeout
+        exec('npm install ' + moduleName, {
+          cwd, timeout: MAX_INSTALL_TIME
+        }, (err, stdout, stderr) => {
           if (err) {
             console.error(err.code, err.message, stderr);
+            resolve(false);
+          } else {
+            debug(stdout);
+            console.log(`finish install: ${moduleName}`);
+            resolve(true);
           }
-          // install module with timeout
-          exec('npm install ' + moduleName, {
-            cwd, timeout: MAX_INSTALL_TIME
-          }, (err, stdout, stderr) => {
-            if (err) {
-              console.error(err.code, err.message, stderr);
-              resolve(false);
-            } else {
-              debug(stdout);
-              console.log(`finish install: ${moduleName}`);
-              resolve(true);
-            }
-          });
         });
       }
     });

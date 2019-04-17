@@ -1,14 +1,14 @@
 <p align="center"><a href="javascript:void(0);" target="_blank" rel="noopener noreferrer"><img width="300" src="http://filecdn.code2life.top/http_adapter_logo_transparent.png" alt="Http Adapter logo"></a></p>
 
 <p align="center">
-  <a href="https://circleci.com/gh/code2life/http-adapter/tree/master"><img src="https://img.shields.io/circleci/project/github/code2life/http-adapter/master.svg" alt="Build Status"></a>
+  <a href="https://circleci.com/gh/code2life/http-adapter/tree/master"><img src="https://circleci.com/gh/Code2Life/http-adapter.svg?style=svg" alt="Build Status"></a>
   <a href="https://codecov.io/gh/code2life/http-adapter/"><img src="https://img.shields.io/codecov/c/github/code2life/http-adapter/master.svg" alt="Coverage Status"></a>
-  <a href="https://npmcharts.com/compare/vue?minimal=true"><img src="https://img.shields.io/npm/dm/node-adapter.svg" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/vue"><img src="https://img.shields.io/npm/v/node-adapter.svg" alt="Version"></a>
-  <a href="https://www.npmjs.com/package/vue"><img src="https://img.shields.io/npm/l/node-adapter.svg" alt="License"></a>
+  <a href="https://npmcharts.com/compare/node-adapter?minimal=true"><img src="https://img.shields.io/npm/dm/node-adapter.svg" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/node-adapter"><img src="https://img.shields.io/npm/v/node-adapter.svg" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/node-adapter"><img src="https://img.shields.io/github/license/Code2Life/http-adapter.svg" alt="License"></a>
 </p>
 
-## http-adapter
+## Introduction
 A lightweight and extensible HTTP adapter, editable HTTP server, Webhook transformation, request relay platform.
 
 Just route, filter, validate, transform, relay and response your HTTP requests.
@@ -42,7 +42,7 @@ docker run --restart always -p 3000:3000 -d --name http-adapter code2life/http-a
 deployment-content-link
 ```
 
-## Configure
+## Configuration Example
 ```yaml
 todo
 ```
@@ -62,6 +62,4 @@ todo
 - plugin system, and plugin development
 - routing incoming websocket message
 - logging / tracing / monitoring / metrics
-
-## License
-Apache-2.0
+- transform to more form of outbound message, such as RPC Call, MQ Message

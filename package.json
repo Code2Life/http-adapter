@@ -21,8 +21,9 @@
     "url": "git+https://github.com/Code2Life/http-adapter.git"
   },
   "keywords": [
-    "webhook",
+    "http-server",
     "adapter",
+    "webhook",
     "relay",
     "transform"
   ],

@@ -1,6 +1,4 @@
-FROM circleci/node:10.15.3
-
-WORKDIR /opt/http-adapter
+FROM node:10.15.3
 
 RUN npm install node-adapter-cli -g
 

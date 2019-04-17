@@ -1,6 +1,6 @@
 {
   "name": "node-adapter-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "CLI tool for node-adapter module https://github.com/Code2Life/http-adapter.git",
   "main": "index.js",
   "scripts": {

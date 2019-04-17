@@ -22,26 +22,38 @@ Setup your HTTP server in 3 minutes by a few YAML configurations and a few TS/JS
 ## Demo
 todo
 
+## Features
+- Dynamic request routing by configuration files, configurable and extensible runtime environment
+- Easy to use YAML configuration files and GUI. Extremely convenient for request transformation
+- Dynamic business logic based on dynamic Typescript/ECMAScript code and Templates
+- Out of box Prometheus Metrics API and REST API for management
+- Perfect Scalability with Docker and Kubernetes
+- Great Performance since dynamic functions are compiled AOT (Ahead-of-Time)
+- Plugin development make complex business logic being configured dynamically
+
 ## Architecture
 ![](http://filecdn.code2life.top/http-adapter-architecture-v2.png)
 
 ## Quick Start
 
 ### Install
-temporary unavailable, developing
 ```bash
-# by NPM (Requires Node > v8.0.0)
-npm install -g node-adapter-cli
-http-adapter -p 3001
-
-# by Docker
-docker run --restart always -p 3000:3000 -d --name http-adapter code2life/http-adapter
+# by Docker (Recommended)
+docker run --restart always -p 3000:3000 -d --name http-adapter code2life/http-adapter:v1
 
 # by Kubernetes
-deployment-content-link
+kubectl apply -f https://raw.githubusercontent.com/Code2Life/http-adapter/master/build/kubernetes/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/Code2Life/http-adapter/master/build/kubernetes/service.yaml
+
+# by NPM (Requires Node > v8.0.0)
+npm install -g node-adapter-cli
+http-adapter
+
+# to see all available arguments
+http-adapter --help
 ```
 
-## Configuration Example
+### Configuration Example
 ```yaml
 todo
 ```
@@ -49,18 +61,12 @@ todo
 ## Plugins
 todo
 
-## Features
-- Dynamic request routing by configuration files
-- Typescript/ECMAScript code supported
-- TODO
-
 ## Todo
+- pre-installed config examples, and downloaded by cli 
 - document template grammar, and allow separate template file
 - configure UI and REST interface
-- install and use as cli with parameters
 - separate RuntimeContext with AdapterConfig (1 -> N)
-- documents and TS/JS/YAML configuration templates
-- plugin system, and plugin development
+- plugin / marketplace system, and plugin development
 - routing incoming websocket message
-- logging / tracing / monitoring / metrics
+- further logging / tracing / monitoring / metrics
 - transform to more form of outbound message, such as RPC Call, MQ Message

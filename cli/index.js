@@ -7,7 +7,6 @@ const { fork } = require('child_process');
 const CDN_BASE = 'http://filecdn.code2life.top';
 const SERVER_FILE_PREFIX = 'http-adapter-';
 const VERSION_URL = 'https://raw.githubusercontent.com/Code2Life/http-adapter/master/package.json';
-const SERVER_PACKAGE = './http-adapter-server-package.json';
 
 let SERVER_FILE = '';
 
@@ -59,8 +58,7 @@ function setTargetVersionNumber() {
         total += buffer;
       });
       res.on('end', () => {
-        fs.writeFileSync(SERVER_PACKAGE, total.toString()); 
-        let version = require(SERVER_PACKAGE).version
+        let version = JSON.parse(total.toString()).version;
         console.log(`Got latest version info: ${version}`);
         SERVER_FILE = SERVER_FILE_PREFIX + version + '.js';
         resolve();

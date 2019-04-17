@@ -14,7 +14,7 @@ const app = new Koa();
 const router = RouterManager.router;
 
 // init metrics client and register to router
-collectDefaultMetrics({
+const metricsInterval = collectDefaultMetrics({
   timeout: METRICS_TIMEOUT,
   prefix: METRICS_PREFIX
 });
@@ -36,4 +36,6 @@ loader.loadFromFiles(process.env.CONF_PATH || path.resolve(__dirname, '../adapte
 
 console.log('server started.');
 
-export default app;
+export const Application = {
+  app, metricsInterval
+};

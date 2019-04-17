@@ -3,9 +3,11 @@
  */
 import Debug from 'debug';
 import http from 'http';
-import app from './app';
+import { Application } from './app';
 
 const debug = Debug('server:startup');
+
+const { app, metricsInterval } = Application;
 
 /**
  * Get port from environment
@@ -27,6 +29,9 @@ const server = http.createServer(app.callback());
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+server.on('close', () => {
+  clearInterval(metricsInterval);
+});
 
 /**
  * Normalize a port into a number, string, or false.

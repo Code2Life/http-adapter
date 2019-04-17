@@ -31,8 +31,8 @@ todo
 ### Install
 temporary unavailable, developing
 ```bash
-# by NPM
-npm install -g http-adapter
+# by NPM (Requires Node > v10.0.0)
+npm install -g node-adapter-cli
 http-adapter -p 3001
 
 # by Docker
@@ -58,6 +58,7 @@ todo
 ## Todo
 - document template grammar, and allow separate template file
 - configure UI and REST interface
+- install and use as cli with parameters
 - separate RuntimeContext with AdapterConfig (1 -> N)
 - documents and TS/JS/YAML configuration templates
 - plugin system, and plugin development

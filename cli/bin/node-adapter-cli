@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+const yargs = require('yargs');
+const _ = require('colors');
+const cli = require('../index');
+
+let argv = yargs.usage('Usage: $0 <options>')
+.option('p', {
+  alias: 'port',
+  describe: 'Server port. \n' + 'usage: -p/--port 3000'.green,
+  default: 3000
+})
+.option('d', {
+  alias: 'debug',
+  describe: 'Debug mode . \n' + 'usage: -d/--debug true'.green,
+  default: false
+})
+.help('help', 'Show this help and exit.\n' + 'usage: --help'.green)
+.version(require('../package').version)
+.argv;
+
+cli.start(argv);

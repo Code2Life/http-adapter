@@ -2,7 +2,7 @@
   "name": "node-adapter",
   "version": "1.0.1",
   "description": "A lightweight and extensible HTTP adapter, editable HTTP server, Webhook transformation, request relay platform. based on koa",
-  "main": "app.js",
+  "main": "dist/http-adapter.js",
   "scripts": {
     "start": "node -r ts-node/register src/main.ts",
     "test": "jest --verbose --detectOpenHandles",
@@ -10,7 +10,7 @@
     "dev": "cross-env CONF_PATH=./adapters-dev DEBUG=server:* nodemon -r ts-node/register src/main.ts",
     "dev_start": "cross-env DEBUG=server:* node -r ts-node/register src/main.ts",
     "dist_start": "npm run build && node dist/main.js",
-    "dist_min_start": "node dist/http-adapter-1.0.1.js",
+    "dist_min_start": "node dist/http-adapter.js",
     "lint": "tslint -p tsconfig.json",
     "build": "tslint -p tsconfig.json && tsc -p tsconfig.json",
     "build_prod": "tslint -p tsconfig.json && webpack --config webpack.config.js --progress --color",

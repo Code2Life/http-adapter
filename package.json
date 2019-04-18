@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node -r ts-node/register src/main.ts",
     "test": "cross-env JEST_JUNIT_OUTPUT=test-result/result.xml jest --verbose --detectOpenHandles",
-    "test_prod": "cross-env JEST_JUNIT_OUTPUT=test-result/result.xml jest --verbose --bail --ci --runInBand --reporters=default --reporters=jest-junit --detectOpenHandles --coverage && codecov --token=2d13016a-614b-4266-8f83-aeffbece3d61",
+    "test_prod": "cross-env JEST_JUNIT_OUTPUT=test-result/result.xml jest --verbose --bail --ci --runInBand --reporters=default --reporters=jest-junit --detectOpenHandles --coverage",
     "dev": "cross-env CONF_PATH=./adapters-dev DEBUG=server:* nodemon -r ts-node/register src/main.ts",
     "dev_start": "cross-env DEBUG=server:* node -r ts-node/register src/main.ts",
     "dist_start": "npm run build && node dist/main.js",

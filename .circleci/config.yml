@@ -18,6 +18,9 @@ jobs:
       - run:
           name: test-with-coverage
           command: npm run test_prod
+      - run:
+          name: update-coverage
+          command: npx codecov --token=2d13016a-614b-4266-8f83-aeffbece3d61
       - store_test_results:
           path: test-result
       - store_artifacts:

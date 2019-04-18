@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import ts from 'typescript';
-import { KVPair } from '../model';
 import { RunTimeEnvironment } from '../runtime/context';
+import { KVPair } from '../storage/model';
 import { TSCompiler } from './mini-compiler';
 
 const debug = Debug('server:func-resolver');

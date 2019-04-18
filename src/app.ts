@@ -2,10 +2,9 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import koaStatic from 'koa-static';
 import cors from 'koa2-cors';
-import path from 'path';
 import { collectDefaultMetrics, register } from 'prom-client';
-import ConfLoader from './manager/conf-loader';
-import RouterManager from './manager/route-manager';
+import { ConfigManager } from './manager/conf-manager';
+import { RouterManager } from './manager/route-manager';
 
 const METRICS_TIMEOUT = 5000;
 const METRICS_PREFIX = 'http_adapter_';
@@ -31,8 +30,7 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 // load existing configurations from directory
-const loader = new ConfLoader(router);
-loader.loadFromFiles(process.env.CONF_PATH || path.resolve(__dirname, '../conf'));
+ConfigManager.initAllConfAndStartWatch();
 
 console.log('server started.');
 

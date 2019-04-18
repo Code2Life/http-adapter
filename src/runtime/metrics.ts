@@ -1,5 +1,5 @@
 import { Counter, Gauge, Summary } from 'prom-client';
-import { AdapterConfig } from '../model';
+import { ApplicationConfig, RouteConfig } from '../storage/model';
 
 interface MetricsInfo {
   total: Counter;
@@ -8,7 +8,7 @@ interface MetricsInfo {
   createdAt: number;
 }
 
-const labelNames = ['context_name', 'path'];
+const labelNames = ['application', 'route', 'path'];
 
 class RunTimeMetrics {
 
@@ -18,10 +18,10 @@ class RunTimeMetrics {
     this.initMetrics();
   }
 
-  public triggerMetrics(conf: AdapterConfig, timestamp: number, cost: number) {
-    this.envMetrics.total.labels(conf.name, conf.location).inc(1, timestamp);
-    this.envMetrics.lastDuration.labels(conf.name, conf.location).set(cost, timestamp);
-    this.envMetrics.avgLatency.labels(conf.name, conf.location).observe(cost);
+  public triggerMetrics(conf: ApplicationConfig, route: RouteConfig, timestamp: number, cost: number) {
+    this.envMetrics.total.labels(conf.name, route.name, route.location).inc(1, timestamp);
+    this.envMetrics.lastDuration.labels(conf.name, route.name, route.location).set(cost, timestamp);
+    this.envMetrics.avgLatency.labels(conf.name, route.name, route.location).observe(cost);
   }
 
   private initMetrics() {

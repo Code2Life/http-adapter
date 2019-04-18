@@ -4,11 +4,12 @@ import { FunctionResolver } from '../compiler/func-resolver';
 import { ModuleResolver } from '../compiler/module-resolver';
 import { TemplateResolver } from '../compiler/tmpl-resolver';
 import { constants } from '../constants';
+import { ApplicationConfig } from '../storage/model';
 import { Executor, FuncSet } from './executor';
 
 const debug = Debug('server:initialize-stage');
 
-export class InitializeStage extends Executor<void> {
+export class InitializeStage extends Executor<void, ApplicationConfig> {
 
   public async execute(): Promise<void> {
     try {
@@ -70,51 +71,57 @@ export class InitializeStage extends Executor<void> {
   }
 
   private generateExtractStageFunctions() {
-    for (let handler of this.envConf.extract.headerHandlers) {
-      if (handler.validate) {
-        FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_HEADER_PREFIX);
+    for (let routeConf of this.envConf.routes) {
+      for (let handler of routeConf.extract.headerHandlers) {
+        if (handler.validate) {
+          FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_HEADER_PREFIX + routeConf.name);
+        }
       }
-    }
-    for (let handler of this.envConf.extract.bodyHandlers) {
-      if (handler.validate) {
-        FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_BODY_PREFIX);
+      for (let handler of routeConf.extract.bodyHandlers) {
+        if (handler.validate) {
+          FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_BODY_PREFIX + routeConf.name);
+        }
       }
     }
   }
 
   private generateRelayStageFunctions() {
-    let cnt = 0;
-    for (let relayConf of this.envConf.relay) {
-      TemplateResolver.compileTemplateStrToFunction(constants.URL_PROP_SUFFIX, relayConf.url,
-        this.ctxRunEnv, constants.RELAY_PROP_TEMPLATE_FUNC_PREFIX + cnt);
-      if (relayConf.headers) {
-        TemplateResolver.compileTemplateObjToFunction(relayConf.headers,
-          this.ctxRunEnv, constants.RELAY_HEADER_TEMPLATE_FUNC_PREFIX + cnt);
+    for (let routeConf of this.envConf.routes) {
+      let cnt = 0;
+      for (let relayConf of routeConf.relay) {
+        TemplateResolver.compileTemplateStrToFunction(constants.URL_PROP_SUFFIX, relayConf.url,
+          this.ctxRunEnv, constants.RELAY_PROP_TEMPLATE_FUNC_PREFIX + routeConf.name + cnt);
+        if (relayConf.headers) {
+          TemplateResolver.compileTemplateObjToFunction(relayConf.headers,
+            this.ctxRunEnv, constants.RELAY_HEADER_TEMPLATE_FUNC_PREFIX + routeConf.name + cnt);
+        }
+        if (relayConf.body) {
+          TemplateResolver.compileTemplateStrToFunction(constants.BODY_PROP_SUFFIX, relayConf.body,
+            this.ctxRunEnv, constants.RELAY_PROP_TEMPLATE_FUNC_PREFIX + routeConf.name + cnt);
+        }
+        if (relayConf.interceptors) {
+          FunctionResolver.compileAndLoadFunctionObj(relayConf.interceptors,
+            this.ctxRunEnv, constants.RELAY_INTERCEPTOR_FUNC_PREFIX + routeConf.name + cnt);
+        }
+        cnt++;
       }
-      if (relayConf.body) {
-        TemplateResolver.compileTemplateStrToFunction(constants.BODY_PROP_SUFFIX, relayConf.body,
-          this.ctxRunEnv, constants.RELAY_PROP_TEMPLATE_FUNC_PREFIX + cnt);
-      }
-      if (relayConf.interceptors) {
-        FunctionResolver.compileAndLoadFunctionObj(relayConf.interceptors,
-          this.ctxRunEnv, constants.RELAY_INTERCEPTOR_FUNC_PREFIX + cnt);
-      }
-      cnt++;
     }
   }
 
   private generateResponseStageFunctions() {
-    if (this.envConf.response.headers) {
-      TemplateResolver.compileTemplateObjToFunction(this.envConf.response.headers,
-        this.ctxRunEnv, constants.RESP_HEADER_TEMPLATE_FUNC_PREFIX);
-    }
-    if (this.envConf.response.body) {
-      TemplateResolver.compileTemplateStrToFunction(constants.BODY_PROP_SUFFIX, this.envConf.response.body,
-        this.ctxRunEnv, constants.RESP_PROP_TEMPLATE_FUNC_PREFIX);
-    }
-    if (this.envConf.response.interceptors) {
-      FunctionResolver.compileAndLoadFunctionObj(this.envConf.response.interceptors,
-        this.ctxRunEnv, constants.RESP_INTERCEPTOR_FUNC_PREFIX);
+    for (let routeConf of this.envConf.routes) {
+      if (routeConf.response.headers) {
+        TemplateResolver.compileTemplateObjToFunction(routeConf.response.headers,
+          this.ctxRunEnv, constants.RESP_HEADER_TEMPLATE_FUNC_PREFIX + routeConf.name);
+      }
+      if (routeConf.response.body) {
+        TemplateResolver.compileTemplateStrToFunction(constants.BODY_PROP_SUFFIX, routeConf.response.body,
+          this.ctxRunEnv, constants.RESP_PROP_TEMPLATE_FUNC_PREFIX + routeConf.name);
+      }
+      if (routeConf.response.interceptors) {
+        FunctionResolver.compileAndLoadFunctionObj(routeConf.response.interceptors,
+          this.ctxRunEnv, constants.RESP_INTERCEPTOR_FUNC_PREFIX + routeConf.name);
+      }
     }
   }
 }

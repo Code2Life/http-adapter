@@ -1,19 +1,21 @@
 import Debug from 'debug';
 import { Context } from 'koa';
 import { constants } from '../constants';
+import { RouteConfig } from '../storage/model';
 import { Executor, FuncSet } from './executor';
 
 const debug = Debug('server:extract-stage');
 
-export class ExtractStage extends Executor<boolean> {
+export class ExtractStage extends Executor<boolean, RouteConfig> {
   async execute(ctx: Context): Promise<boolean> {
     // validate/filter, extract and set variables from header and body
     let runtime = this.ctxRunEnv.getRunTimeEnv();
+    let routeName = this.envConf.name;
     let result = true;
     for (let handler of this.envConf.extract.headerHandlers) {
       let header = ctx.request.headers[handler.key];
       if (handler.validate) {
-        let tmpValidateFunc = (<FuncSet>runtime)[constants.VERIFY_REQ_HEADER_PREFIX + handler.key];
+        let tmpValidateFunc = (<FuncSet>runtime)[constants.VERIFY_REQ_HEADER_PREFIX + routeName + handler.key];
         if (typeof tmpValidateFunc === 'function') {
           try {
             let validateResult = await tmpValidateFunc(header, ctx.request);
@@ -35,7 +37,7 @@ export class ExtractStage extends Executor<boolean> {
       for (let handler of this.envConf.extract.bodyHandlers) {
         let body = ctx.request.body[handler.key];
         if (handler.validate) {
-          let tmpValidateFunc = (<FuncSet>runtime)[constants.VERIFY_REQ_BODY_PREFIX + handler.key];
+          let tmpValidateFunc = (<FuncSet>runtime)[constants.VERIFY_REQ_BODY_PREFIX + routeName + handler.key];
           if (typeof tmpValidateFunc === 'function') {
             try {
               let validateResult = await tmpValidateFunc(body, ctx.request);

@@ -27,5 +27,17 @@ export const constants = {
   BODY_PROP_SUFFIX: '_body',
 
   // if put '_' as relay request url, means manually intercept mode, request won't be sent
-  DUMMY_URL: '_'
+  DUMMY_URL: '_',
+
+  CONTEXT_YAML_NAME: 'context.yaml',
+
+  YAML_SUFFIX: '.yaml',
+
+  YML_SUFFIX: '.yml',
+
+  ROUTES_CONF_PATH: 'routes',
+
+  PLUGINS_DIR: '_plugins',
+
+  ROUTES_DIR: 'routes'
 };

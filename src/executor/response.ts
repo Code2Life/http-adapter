@@ -1,15 +1,17 @@
 import Debug from 'debug';
 import { Context } from 'koa';
 import { constants } from '../constants';
+import { RouteConfig } from '../storage/model';
 import { Executor, FuncSet } from './executor';
 
 const debug = Debug('server:response-stage');
 
-export class ResponseStage extends Executor<void> {
+export class ResponseStage extends Executor<void, RouteConfig> {
 
   async execute(ctx: Context): Promise<void> {
     // compose and send response back to origin client
     let respConf = this.envConf.response;
+    let routeName = this.envConf.name;
     let { body, headers, interceptors } = respConf;
     let responseObj = {
       statusCode: 200,
@@ -18,13 +20,13 @@ export class ResponseStage extends Executor<void> {
     };
     let runtime = this.ctxRunEnv.getRunTimeEnv();
 
-    let tmplReplaceFuncBody = (<FuncSet>runtime)[constants.RESP_PROP_TEMPLATE_FUNC_PREFIX + constants.BODY_PROP_SUFFIX];
+    let tmplReplaceFuncBody = (<FuncSet>runtime)[constants.RESP_PROP_TEMPLATE_FUNC_PREFIX + routeName + constants.BODY_PROP_SUFFIX];
     if (body && typeof tmplReplaceFuncBody === 'function') {
       responseObj.body = tmplReplaceFuncBody();
     }
     if (headers) {
       for (let key in headers) {
-        let tmplReplaceFuncHeader = (<FuncSet>runtime)[constants.RESP_HEADER_TEMPLATE_FUNC_PREFIX + key];
+        let tmplReplaceFuncHeader = (<FuncSet>runtime)[constants.RESP_HEADER_TEMPLATE_FUNC_PREFIX + routeName + key];
         if (typeof tmplReplaceFuncHeader === 'function') {
           responseObj.headers[key] = tmplReplaceFuncHeader();
         }
@@ -34,7 +36,7 @@ export class ResponseStage extends Executor<void> {
     // call interceptors to process response data
     if (interceptors) {
       for (let interceptor in interceptors) {
-        let interceptorFunc = (<FuncSet>runtime)[constants.RESP_INTERCEPTOR_FUNC_PREFIX + interceptor];
+        let interceptorFunc = (<FuncSet>runtime)[constants.RESP_INTERCEPTOR_FUNC_PREFIX + routeName + interceptor];
         if (typeof interceptorFunc === 'function') {
           responseObj = await interceptorFunc(responseObj, ctx);
         }

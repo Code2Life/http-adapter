@@ -1,12 +1,26 @@
-export interface AdapterConfig {
+export interface ApplicationConfig {
   name: string;
+  enable: boolean;
+  description: string;
   hostname?: string;
-  location: string;
-  method: CommonHttpMethod;
   initContext: InitContextConfig;
+  routes: RouteConfig[];
+}
+
+export interface RouteConfig {
+  name: string;
+  location: string;
+  enable: boolean;
+  method: CommonHttpMethod;
   extract: ExtractionConfig;
   relay: RelayConfig[];
   response: ResponseConfig;
+}
+
+export interface ContextPlugin {
+  name: string;
+  enable: boolean;
+  initContext: InitContextConfig;
 }
 
 export interface InitContextConfig {

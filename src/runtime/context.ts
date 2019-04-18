@@ -1,6 +1,6 @@
 import Debug from 'debug';
-import { AdapterConfig } from '../model';
-import { ContextMetrics } from './metrics';
+import { EventEmitter } from 'events';
+import { ApplicationConfig } from '../storage/model';
 
 const debug = Debug('server:runtime-ctx');
 
@@ -14,11 +14,11 @@ const MAX_RESERVE_ERRORS = 100;
 
 export class RunTimeEnvironment {
 
-  private envConf: AdapterConfig;
+  private envConf: ApplicationConfig;
   private envErrors: ErrorInfo[];
-  private runContext: Object = {};
+  private runContext: Object = new EventEmitter();
 
-  constructor(conf: AdapterConfig) {
+  constructor(conf: ApplicationConfig) {
     this.envConf = conf;
     this.envErrors = [];
     this.setPropertyToRunTime('_envConf', this.envConf);
@@ -31,10 +31,6 @@ export class RunTimeEnvironment {
       writable: true,
       value: obj
     });
-  }
-
-  public requestMetrics(startTime: number, duration: number) {
-    ContextMetrics.triggerMetrics(this.envConf, startTime, duration);
   }
 
   public getRunTimeEnv() {

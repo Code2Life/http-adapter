@@ -1,7 +1,9 @@
 import Debug from 'debug';
+import { EventEmitter } from 'events';
 import { Context } from 'koa';
-import { AdapterConfig } from '../model';
 import { RunTimeEnvironment } from '../runtime/context';
+import { ContextMetrics } from '../runtime/metrics';
+import { ApplicationConfig } from '../storage/model';
 import { ExtractStage } from './extract';
 import { InitializeStage } from './initialize';
 import { RelayStage } from './relay';
@@ -14,29 +16,47 @@ export default class ContextDirector {
 
 
   private ctxRunEnv: RunTimeEnvironment;
-  private envConf: AdapterConfig;
+  private envConf: ApplicationConfig;
 
   private initializeStage: InitializeStage;
-  private extractStage: ExtractStage;
-  private relayStage: RelayStage;
-  private responseStage: ResponseStage;
+  private extractStages: Map<string, ExtractStage> = new Map();
+  private relayStages: Map<string, RelayStage> = new Map();
+  private responseStages: Map<string, ResponseStage> = new Map();
 
-  constructor(conf: AdapterConfig) {
+  constructor(conf: ApplicationConfig) {
     this.envConf = conf;
     this.ctxRunEnv = new RunTimeEnvironment(conf);
     this.initializeStage = new InitializeStage(this.envConf, this.ctxRunEnv);
-    this.extractStage = new ExtractStage(this.envConf, this.ctxRunEnv);
-    this.relayStage = new RelayStage(this.envConf, this.ctxRunEnv);
-    this.responseStage = new ResponseStage(this.envConf, this.ctxRunEnv);
+    for (let route of conf.routes) {
+      this.extractStages.set(route.name, new ExtractStage(route, this.ctxRunEnv));
+      this.relayStages.set(route.name, new RelayStage(route, this.ctxRunEnv));
+      this.responseStages.set(route.name, new ResponseStage(route, this.ctxRunEnv));
+    }
   }
 
   public initialize() {
     return this.initializeStage.execute();
   }
 
-  get handler() {
-    const director = this;
+  /**
+   * @remark if anything else need dispose, such as db connection or timeout/intervals
+   * add an initFunction like: function dispose() { this.on('dispose', () => {}) }
+   */
+  public dispose() {
+    (<EventEmitter>this.ctxRunEnv.getRunTimeEnv()).emit('dispose');
+  }
+
+  public getHandlerByRoute(routeName: string) {
     const conf = this.envConf;
+    const routeConf = this.envConf.routes.filter(r => r.name === routeName)[0];
+    const extractStage = this.extractStages.get(routeName);
+    const relayStage = this.relayStages.get(routeName);
+    const responseStage = this.responseStages.get(routeName);
+
+    if (!extractStage || !relayStage || !responseStage) {
+      throw new Error('Server error, invalid runtime context for application: ' + conf.name);
+    }
+
     return async (ctx: Context, next: () => Promise<any>) => {
       ctx.reqId = uuid.v4();
       ctx.startTime = Date.now();
@@ -47,19 +67,19 @@ export default class ContextDirector {
           return next();
         }
         // different template method for different resp policy
-        let valid = await director.extractStage.execute(ctx);
+        let valid = await extractStage.execute(ctx);
         if (!valid) {
           // 400 bad request
           ctx.response.status = 400;
           return;
         }
-        if (conf.response.policy === 'immediate') {
-          await director.responseStage.execute(ctx);
+        if (routeConf.response.policy === 'immediate') {
+          await responseStage.execute(ctx);
           await next();
-          await director.relayStage.execute(ctx);
+          await relayStage.execute(ctx);
         } else {
-          await director.relayStage.execute(ctx);
-          await director.responseStage.execute(ctx);
+          await relayStage.execute(ctx);
+          await responseStage.execute(ctx);
           await next();
         }
       } catch (ex) {
@@ -68,7 +88,7 @@ export default class ContextDirector {
       } finally {
         const duration = Date.now() - ctx.startTime;
         debug(`${ctx.reqId}: done in ${duration} ms`);
-        this.ctxRunEnv.requestMetrics(ctx.startTime, duration);
+        ContextMetrics.triggerMetrics(this.envConf, routeConf, ctx.startTime, duration);
       }
     };
   }

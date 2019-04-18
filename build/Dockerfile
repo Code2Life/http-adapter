@@ -1,6 +1,6 @@
 FROM node:10.15.3
 
-RUN npm install node-adapter-cli@1.0.4 -g
+RUN npm install node-adapter-cli -g
 
 CMD [ "http-adapter" ]
 

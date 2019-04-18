@@ -32,7 +32,7 @@ app.use(router.allowedMethods());
 
 // load existing configurations from directory
 const loader = new ConfLoader(router);
-loader.loadFromFiles(process.env.CONF_PATH || path.resolve(__dirname, '../adapters'));
+loader.loadFromFiles(process.env.CONF_PATH || path.resolve(__dirname, '../conf'));
 
 console.log('server started.');
 

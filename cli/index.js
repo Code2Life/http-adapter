@@ -13,18 +13,16 @@ let SERVER_FILE = '';
 async function startApplication(options) {
   if (valid(options)) {
     try {
-      process.env.NODE_PORT = options.port;
-      process.env.CONF_PATH = __dirname + '/adapters';
-      process.env.DEBUG = options.debug ? 'server:*' : '';
-      
-      const designatedVersion = options['server-version'];
+      process.env.NODE_PORT = options.port || process.env.NODE_PORT;
+      process.env.CONF_PATH = process.env.CONF_PATH || __dirname + '/conf';
+      process.env.DEBUG = process.env.DEBUG || options.debug ? 'server:*' : '';
+      const designatedVersion = process.env.SERVER_VERSION || options['server-version'];
       if (!designatedVersion) {
         await setTargetVersionNumber();
       } else {
         SERVER_FILE = SERVER_FILE_PREFIX + designatedVersion + '.js';
         console.log(`User specify the version: ${SERVER_FILE}`);
       }
-      
       await downloadPreInstalledConf();
       await downloadServerCodeAndStart();
     } catch (ex) {

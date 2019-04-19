@@ -1,17 +1,23 @@
 export interface ApplicationConfig {
   name: string;
-  enable: boolean;
+  disable: boolean;
   description: string;
   hostname?: string;
   initContext: InitContextConfig;
   routes: RouteConfig[];
+
+  /* advanced features to do later, isolated application and ports */
+  inboundType: MessageType;
+  outboundType: MessageType;
+  port?: number;
+  additionalConf?: Object;
 }
 
 export interface RouteConfig {
   name: string;
   location: string;
-  enable: boolean;
-  method: CommonHttpMethod;
+  disable: boolean;
+  method: CommonHttpMethod | WebSocketMethod;
   extract: ExtractionConfig;
   relay: RelayConfig[];
   response: ResponseConfig;
@@ -19,7 +25,7 @@ export interface RouteConfig {
 
 export interface ContextPlugin {
   name: string;
-  enable: boolean;
+  disable: boolean;
   initContext: InitContextConfig;
 }
 
@@ -30,6 +36,10 @@ export interface InitContextConfig {
   functions: KVPair; // value as function
 }
 
+export enum MessageType {
+  HTTP = 'http',
+  WebSocket = 'websocket'
+}
 export interface ExtractionConfig {
   headerHandlers: ExtractionSpec[];
   bodyHandlers: ExtractionSpec[];
@@ -37,7 +47,8 @@ export interface ExtractionConfig {
 
 export interface RelayConfig {
   name: string;
-  url: string;
+  outboundType: MessageType;
+  location: string;
   method: CommonHttpMethod;
   headers?: KVPair;
   body?: TemplateStr;
@@ -66,6 +77,9 @@ export type ExtractionSpec = {
 };
 
 export type CommonHttpMethod = 'get' | 'post' | 'put' | 'delete';
+
+// inbound(route) = listen, outbound(relay) = emit
+export type WebSocketMethod = 'listen' | 'emit';
 
 export type RespondPolicy = 'immediate' | 'afterRelay';
 

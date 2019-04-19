@@ -47,7 +47,7 @@ export abstract class ConfStorage {
 
   abstract watchPluginConf(): Observable<ConfEvent<ContextPlugin>>;
 
-  abstract loadSeparateFunction(targetFile: string, confObj: ApplicationConfig): Promise<string>;
+  abstract loadSeparateContent(targetFile: string, confObj: ApplicationConfig): Promise<string>;
 
   // abstract exportApplicationConf();
 

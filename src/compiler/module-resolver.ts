@@ -41,7 +41,7 @@ export class ModuleResolver {
   }
 
   private static async dynamicInstallModule(moduleName: string): Promise<boolean> {
-    return new Promise((resolve, _) => {
+    return new Promise<boolean>((resolve, _) => {
       try {
         require(moduleName);
         resolve(true);

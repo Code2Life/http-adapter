@@ -128,7 +128,7 @@ export class FileStorage extends ConfStorage {
     });
   }
 
-  public async loadSeparateFunction(target: string, conf: ApplicationConfig) {
+  public async loadSeparateContent(target: string, conf: ApplicationConfig) {
     let buffer = await fs.readFile(path.join(this.confRoot, conf.name, target));
     return buffer.toString().trim();
   }

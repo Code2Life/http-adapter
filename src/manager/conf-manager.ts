@@ -21,14 +21,14 @@ export class ConfigManager {
       // step1, load all plugins to server
       let plugins = await this.backendStorage.listAllPlugins();
       for (let plugin of plugins) {
-        if (plugin.enable) {
+        if (!plugin.disable) {
           await this.enablePlugin(plugin);
         }
       }
       // step2, load all context configuration applications
       let applications = await this.backendStorage.listAllApplications();
       for (let application of applications) {
-        if (application.enable) {
+        if (!application.disable) {
           await this.enableApplication(application);
         }
       }
@@ -49,7 +49,7 @@ export class ConfigManager {
       try {
         let conf = event.conf;
         debug(`application conf change got (${ConfEventType[event.eventType]}): ${conf.name}`);
-        if (event.eventType == ConfEventType.Deleted || !conf.enable) {
+        if (event.eventType == ConfEventType.Deleted || conf.disable) {
           await this.disableApplication(conf.name);
         } else {
           await this.enableApplication(conf);
@@ -65,7 +65,7 @@ export class ConfigManager {
       try {
         let conf = event.conf;
         debug(`plugin conf change got (${ConfEventType[event.eventType]}): ${conf.name}`);
-        if (event.eventType == ConfEventType.Deleted || !conf.enable) {
+        if (event.eventType == ConfEventType.Deleted || conf.disable) {
           await this.disablePlugin(conf.name);
         } else {
           await this.enablePlugin(conf);

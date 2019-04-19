@@ -16,15 +16,15 @@ export class RelayStage extends Executor<void, RouteConfig> {
     let routeName = this.envConf.name;
     let cnt = 0;
     for (let relayConf of this.envConf.relay) {
-      let { name, url, method, body, headers, interceptors } = relayConf;
+      let { name, location, method, body, headers, interceptors } = relayConf;
       let sendMethod = method.toUpperCase();
       let axiosConf = {
         method: sendMethod,
-        url,
+        url: location,
         headers: Object.assign({}, headers),
         data: body
       };
-      debug(`${ctx.reqId}: processing relay request (${name}) - ${sendMethod} ${url}`);
+      debug(`${ctx.reqId}: processing relay request (${name}) - ${sendMethod} ${location}`);
 
       // step1, replace template in url, body and header
       let tmplReplaceFuncURL = (<FuncSet>runtime)[constants.RELAY_PROP_TEMPLATE_FUNC_PREFIX +
@@ -57,7 +57,7 @@ export class RelayStage extends Executor<void, RouteConfig> {
       }
 
       // step3, send request to target server
-      if (url !== constants.DUMMY_URL) {
+      if (location !== constants.DUMMY_URL) {
         let resp = await axios(axiosConf);
         responseMap.set(name, resp);
       }

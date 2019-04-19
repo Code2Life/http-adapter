@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import { TSCompiler } from '../compiler/mini-compiler';
 import { ConfigManager } from '../manager/conf-manager';
-import { ApplicationConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair } from './model';
+import { ApplicationConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair, MessageType } from './model';
 
 const debug = Debug('server:conf-normalizer');
 
@@ -19,6 +19,9 @@ export class ConfNormalizer {
     }, rawObj.initContext.libraries);
     rawObj.initContext.constants = rawObj.initContext.constants || {};
     rawObj.initContext.initFunctions = rawObj.initContext.initFunctions || {};
+    // default as HTTP context
+    rawObj.inboundType = rawObj.inboundType || MessageType.HTTP;
+    rawObj.outboundType = rawObj.outboundType || MessageType.HTTP;
 
     for (let routeObj of rawObj.routes) {
       // validate and set default value for main fields
@@ -52,7 +55,8 @@ export class ConfNormalizer {
       } else {
         for (let relayReq of routeObj.relay) {
           relayReq.method = <CommonHttpMethod>(relayReq.method || 'get').toLocaleLowerCase();
-          if (!relayReq.name || !relayReq.url) {
+          relayReq.outboundType = relayReq.outboundType || MessageType.HTTP;
+          if (!relayReq.name || !relayReq.location) {
             throw new Error(`no name or url of relay request config ${rawObj.name} / ${routeObj.name}`);
           }
         }
@@ -98,28 +102,32 @@ export class ConfNormalizer {
 
   private static async loadCodeInConf(target: KVPair | string, confObj: ApplicationConfig) {
     if (typeof target === 'string') {
-      return await this.loadSingleFunctionCode(target, confObj);
+      return await this.loadSingleFuncOrTmplCode(target, confObj);
     } else {
       for (let funcName in target) {
         let funcStr = target[funcName].trim();
-        target[funcName] = await this.loadSingleFunctionCode(funcStr, confObj);
+        target[funcName] = await this.loadSingleFuncOrTmplCode(funcStr, confObj);
       }
     }
     return target;
   }
 
-  private static async loadSingleFunctionCode(target: string, confObj: ApplicationConfig) {
-    let funcBody = target;
-    if (target && (target.endsWith('.js') || target.endsWith('.ts'))) {
-      funcBody = await ConfigManager.storage.loadSeparateFunction(target, confObj);
+  private static async loadSingleFuncOrTmplCode(target: string, confObj: ApplicationConfig) {
+    let content = target;
+    // load content data from files
+    if (target && (target.endsWith('.js') || target.endsWith('.ts') || target.endsWith('.tmpl'))) {
+      content = await ConfigManager.storage.loadSeparateContent(target, confObj);
+    }
+    if (target.endsWith('.tmpl')) {
+      return content;
     }
     // parse TS/JS function using TS Compiler
-    let output = TSCompiler.transformTS(funcBody);
+    let output = TSCompiler.transformTS(content);
     if (output.diagnostics && output.diagnostics.length > 0) {
       console.log('warn or error from TS compiler: ' + JSON.stringify(output.diagnostics));
     }
     if (!output.outputText) {
-      throw new Error('error/no-output when loading TS source file: ' + target);
+      throw new Error('error/no-output when loading TS/JS source file: ' + target);
     }
     return output.outputText;
   }

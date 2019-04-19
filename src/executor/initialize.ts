@@ -89,7 +89,7 @@ export class InitializeStage extends Executor<void, ApplicationConfig> {
     for (let routeConf of this.envConf.routes) {
       let cnt = 0;
       for (let relayConf of routeConf.relay) {
-        TemplateResolver.compileTemplateStrToFunction(constants.URL_PROP_SUFFIX, relayConf.url,
+        TemplateResolver.compileTemplateStrToFunction(constants.URL_PROP_SUFFIX, relayConf.location,
           this.ctxRunEnv, constants.RELAY_PROP_TEMPLATE_FUNC_PREFIX + routeConf.name + cnt);
         if (relayConf.headers) {
           TemplateResolver.compileTemplateObjToFunction(relayConf.headers,

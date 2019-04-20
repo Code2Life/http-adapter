@@ -1,43 +1,43 @@
-const path = require('path');
-const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const version = require('./package.json').version;
+const path = require("path");
+const webpack = require("webpack");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const version = require("./package.json").version;
 
 module.exports = {
-  entry: './src/main.ts',
-  devtool: 'source-map',
-  target: 'node',
+  entry: "./src/main.ts",
+  devtool: "source-map",
+  target: "node",
   node: false,
-  mode: 'production',
+  mode: "production",
   plugins: [
-    new CleanWebpackPlugin('./dist'),
+    new CleanWebpackPlugin("./dist"),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'production'
+      NODE_ENV: "production"
     }),
     new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
+      analyzerMode: "static",
       openAnalyzer: false
     })
   ],
   module: {
     rules: [{
       test: /\.ts$/,
-      use: 'ts-loader',
+      use: "ts-loader",
       exclude: /node_modules/
     }]
   },
   // for ws module, these two cpp dependencies are optional, ignore them
-  externals: ['bufferutil', 'utf-8-validate'],
+  externals: ["bufferutil", "utf-8-validate"],
   resolve: {
-    extensions: ['.ts', '.js', '.json', '.node']
+    extensions: [".ts", ".js", ".json", ".node"]
   },
   optimization: {
     minimize: true,
-    nodeEnv: 'production',
+    nodeEnv: "production",
   },
   output: {
     filename: `http-adapter-${version}.js`,
-    path: path.resolve(__dirname, './dist')
+    path: path.resolve(__dirname, "./dist")
   }
 };

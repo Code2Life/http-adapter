@@ -7,15 +7,13 @@ import { ConfigManager } from './manager/conf-manager';
 import { RouterManager } from './manager/route-manager';
 
 const METRICS_TIMEOUT = 5000;
-const METRICS_PREFIX = 'http_adapter_';
 
 const app = new Koa();
 const router = RouterManager.router;
 
 // init metrics client and register to router
 const metricsInterval = collectDefaultMetrics({
-  timeout: METRICS_TIMEOUT,
-  prefix: METRICS_PREFIX
+  timeout: METRICS_TIMEOUT
 });
 router.get('_metrics', '/_metrics', ctx => {
   ctx.headers['content-type'] = register.contentType;

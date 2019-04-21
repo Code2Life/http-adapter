@@ -10,7 +10,7 @@ export class RouterManager {
   public static router = new Router();
   public static routerMap = new Map<string, Router.Layer>();
 
-  public static async addRouterFromConf(director: ContextDirector, conf: RouteConfig) {
+  public static async addHttpRouteFromConf(director: ContextDirector, conf: RouteConfig) {
     // register to router
     const layer = this.router.register(conf.location, [conf.method], director.getHandlerByRoute(conf.name));
     layer.name = conf.name;

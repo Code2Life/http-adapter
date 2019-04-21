@@ -1,6 +1,7 @@
 import Debug from 'debug';
 import ContextDirector from '../executor/director';
 import { ApplicationConfig } from '../model/application';
+import { MessageType } from '../model/enums';
 import { ConfEventType, ConfStorage } from '../storage/storage';
 import { StorageFactory } from '../storage/storage-factory';
 import { RouterManager } from './route-manager';
@@ -19,7 +20,7 @@ export class ConfigManager {
       this.backendStorage = await StorageFactory.createBackendStorage();
       let applications = await this.backendStorage.listAllConfigurations();
 
-      // todo normalize application for runtime, especially for MIXIN
+      // todo normalize application for runtime, especially for MIXIN, merge configs
 
       for (let application of applications) {
         if (!application.disable) {
@@ -67,7 +68,15 @@ export class ConfigManager {
     this.applications.set(conf.name, conf);
     this.applicationContext.set(conf.name, contextDirector);
     for (let route of conf.routes) {
-      await RouterManager.addRouterFromConf(contextDirector, route);
+      switch (conf.inboundType) {
+        case MessageType.HTTP:
+          // support listening different port later conf.port
+          await RouterManager.addHttpRouteFromConf(contextDirector, route);
+          break;
+        case MessageType.WebSocket:
+          // todo websocket support later
+          break;
+      }
     }
   }
 

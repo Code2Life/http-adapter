@@ -27,7 +27,7 @@ export const constants = {
   BODY_PROP_SUFFIX: '_body',
 
   // if put '_' as relay request url, means manually intercept mode, request won't be sent
-  DUMMY_URL: '_',
+  NO_RELAY_DUMMY_URL: '_',
 
   CONTEXT_YAML_NAME: 'context.yaml',
 
@@ -39,5 +39,8 @@ export const constants = {
 
   TRASH_DIR: '_trash',
 
-  ROUTES_DIR: 'routes'
+  ROUTES_DIR: 'routes',
+
+  // Koa context object for template replacing
+  TEMPLATE_FUNC_PARAM: 'ctx'
 };

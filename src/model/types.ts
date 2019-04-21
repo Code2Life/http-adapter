@@ -9,3 +9,9 @@ export type KVPair = {
 export type FunctionStr = string;
 
 export type TemplateStr = string;
+
+export type ContextHttpResponse = {
+  statusCode: number;
+  headers: KVPair;
+  body: any;
+};

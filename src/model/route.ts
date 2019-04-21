@@ -23,7 +23,7 @@ export interface RelayConfig {
   name: string;
   outboundType: MessageType;
   location: string;
-  method: CommonHttpMethod;
+  method: CommonHttpMethod | WebSocketMethod;
   headers?: KVPair;
   body?: TemplateStr;
   interceptors?: KVPair; // value as function

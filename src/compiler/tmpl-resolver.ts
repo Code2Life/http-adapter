@@ -1,5 +1,6 @@
 import { RunTimeEnvironment } from '../runtime/context';
 import { KVPair } from '../model/types';
+import { constants } from '../constants';
 
 export class TemplateResolver {
 
@@ -23,7 +24,7 @@ export class TemplateResolver {
     }
     // generate function
     let funcStr = `return \`${tmpl}\`;`;
-    let func = new Function(funcStr);
+    let func = new Function(constants.TEMPLATE_FUNC_PARAM, funcStr);
     func.prototype.name = prefix + key;
     func.bind(ctxRunEnv);
     ctxRunEnv.setPropertyToRunTime(prefix + key, func);

@@ -15,9 +15,10 @@ export class ExtractStage extends Executor<boolean, RouteConfig> {
       await this.validateAndExtractProperties(ctx, this.envConf.extract.headerHandlers, constants.VERIFY_REQ_HEADER_PREFIX, ctx.request.headers);
       await this.validateAndExtractProperties(ctx, this.envConf.extract.bodyHandlers, constants.VERIFY_REQ_BODY_PREFIX, ctx.request.body);
     } catch (ex) {
+      // Extraction errors are acceptable, so NOT throwing it out, causing 500, so logging this manually
       result = false;
       this.ctxRunEnv.appendError(ex);
-      console.error(`Error when calling validation context ${this.envConf.name}`, ex);
+      console.error(`${ctx.reqId}: Error when calling validation context ${this.envConf.name}`, ex);
     }
     debug(`${ctx.reqId}: finish request extraction`);
     return result;
@@ -33,10 +34,10 @@ export class ExtractStage extends Executor<boolean, RouteConfig> {
         if (typeof tmpValidateFunc === 'function') {
           let result = await tmpValidateFunc(validateObj, ctx.request);
           if (!result) {
-            throw new Error(`validation not pass for prop ${handler.key} in route ${routeName}`);
+            throw new Error(`${ctx.reqId}: validation not pass for prop ${handler.key} in route ${routeName}`);
           }
         } else {
-          throw new Error(`invalid validation rule for prop ${handler.key} in route ${routeName}`);
+          throw new Error(`${ctx.reqId}: invalid validation rule for prop ${handler.key} in route ${routeName}`);
         }
       }
       // property extracts to runtime

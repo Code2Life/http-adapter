@@ -5,6 +5,7 @@ import { ModuleResolver } from '../compiler/module-resolver';
 import { TemplateResolver } from '../compiler/tmpl-resolver';
 import { constants } from '../constants';
 import { ApplicationConfig } from '../model/application';
+import { ExtractionSpec } from '../model/route';
 import { Executor, FuncSet } from './executor';
 
 const debug = Debug('server:initialize-stage');
@@ -48,9 +49,8 @@ export class InitializeStage extends Executor<void, ApplicationConfig> {
         try {
           this.ctxRunEnv.setPropertyToRunTime(constName, tmpFunc());
         } catch (ex) {
-          ex.message = `error when initialize context (${this.envConf.name}): ${ex.message}`;
+          ex.message = `error when initialize constant (${constName}): ${ex.message}`;
           this.ctxRunEnv.appendError(ex);
-          console.error(ex);
         }
         debug(`finish execute init constant ${constName} for context ${this.envConf.name}`);
       }
@@ -61,9 +61,8 @@ export class InitializeStage extends Executor<void, ApplicationConfig> {
         try {
           await tmpFunc();
         } catch (ex) {
-          ex.message = `error when initialize context (${this.envConf.name}): ${ex.message}`;
+          ex.message = `error when initialize function (${funcName}): ${ex.message}`;
           this.ctxRunEnv.appendError(ex);
-          console.error(ex);
         }
         debug(`finish execute init function ${funcName} for context ${this.envConf.name}`);
       }
@@ -72,15 +71,15 @@ export class InitializeStage extends Executor<void, ApplicationConfig> {
 
   private generateExtractStageFunctions() {
     for (let routeConf of this.envConf.routes) {
-      for (let handler of routeConf.extract.headerHandlers) {
-        if (handler.validate) {
-          FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_HEADER_PREFIX + routeConf.name);
-        }
-      }
-      for (let handler of routeConf.extract.bodyHandlers) {
-        if (handler.validate) {
-          FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_BODY_PREFIX + routeConf.name);
-        }
+      this.generateValidateFunctions(routeConf.extract.headerHandlers, routeConf.name);
+      this.generateValidateFunctions(routeConf.extract.bodyHandlers, routeConf.name);
+    }
+  }
+
+  private generateValidateFunctions(spec: ExtractionSpec[], routeName: string) {
+    for (let handler of spec) {
+      if (handler.validate) {
+        FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_HEADER_PREFIX + routeName);
       }
     }
   }

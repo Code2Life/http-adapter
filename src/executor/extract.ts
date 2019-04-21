@@ -33,10 +33,10 @@ export class ExtractStage extends Executor<boolean, RouteConfig> {
         if (typeof tmpValidateFunc === 'function') {
           let result = await tmpValidateFunc(validateObj, ctx.request);
           if (!result) {
-            throw new Error(`validation not pass for prop ${handler.key} in route ${routeName}`)  
+            throw new Error(`validation not pass for prop ${handler.key} in route ${routeName}`);
           }
         } else {
-          throw new Error(`invalid validation rule for prop ${handler.key} in route ${routeName}`)
+          throw new Error(`invalid validation rule for prop ${handler.key} in route ${routeName}`);
         }
       }
       // property extracts to runtime

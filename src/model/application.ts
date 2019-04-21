@@ -7,7 +7,7 @@ export interface ApplicationConfig {
   disable: boolean;
   author: string;
   version: string;
-  downloadURL: string; 
+  downloadURL: string;
   description: string;
   categories: string[];
   hostname?: string;
@@ -31,7 +31,7 @@ export interface MixinApplication {
   routePrefix?: string;
 
   // when mixin mode, some constants should be overridden between apps
-  overrideConf: KVPair; 
+  overrideConf: KVPair;
 }
 
 export interface InitContextConfig {

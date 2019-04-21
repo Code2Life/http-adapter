@@ -113,7 +113,7 @@ export class FileStorage extends ConfStorage {
   public async deleteApplicationConf(appName: string): Promise<boolean> {
     const appDir = path.join(this.confRoot, appName);
     const trashDir = path.join(this.confRoot, constants.TRASH_DIR);
-    const backupName = path.join(trashDir, Date.now().toString(), appName)
+    const backupName = path.join(trashDir, Date.now().toString(), appName);
     await fs.rename(appDir, backupName);
     return true;
   }

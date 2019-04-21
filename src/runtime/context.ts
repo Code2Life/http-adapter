@@ -38,11 +38,13 @@ export class RunTimeEnvironment {
   }
 
   public appendError(ex: any) {
-    let total = this.envErrors.push({
+    const err = {
       timestamp: new Date(),
       message: `context(${this.envConf.name}) runtime error: ${ex.message}`,
       ex
-    });
+    };
+    debug(`${err.message}, error stack: ${ex.stack}`);
+    let total = this.envErrors.push();
     if (total > MAX_RESERVE_ERRORS) {
       this.envErrors.shift();
     }

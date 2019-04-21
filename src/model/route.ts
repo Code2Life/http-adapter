@@ -1,5 +1,5 @@
-import { CommonHttpMethod, MessageType, RespondPolicy, WebSocketMethod } from "./enums";
-import { FunctionStr, KVPair, TemplateStr } from "./types";
+import { CommonHttpMethod, MessageType, RespondPolicy, WebSocketMethod } from './enums';
+import { FunctionStr, KVPair, TemplateStr } from './types';
 
 export interface RouteConfig {
   name: string;

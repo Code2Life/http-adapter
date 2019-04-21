@@ -2,7 +2,7 @@ location: /user/:userId
 method: get
 extract:
   headerHandlers:
-    key: accept-encoding
+  - key: accept-encoding
     alias: accept
     validate: val => val && val.indexOf('gzip') !== -1
   # bodyHandlers

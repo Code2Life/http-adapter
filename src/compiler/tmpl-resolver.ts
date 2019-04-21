@@ -1,5 +1,5 @@
 import { RunTimeEnvironment } from '../runtime/context';
-import { KVPair } from '../storage/model';
+import { KVPair } from '../model/types';
 
 export class TemplateResolver {
 

@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import { Context } from 'koa';
 import { constants } from '../constants';
-import { RouteConfig } from '../storage/model';
+import { RouteConfig } from '../model/route';
 import { Executor, FuncSet } from './executor';
 
 const debug = Debug('server:response-stage');

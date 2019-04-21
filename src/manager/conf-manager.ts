@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import ContextDirector from '../executor/director';
-import { ApplicationConfig, ContextPlugin } from '../storage/model';
+import { ApplicationConfig } from '../model/application';
 import { ConfEventType, ConfStorage } from '../storage/storage';
 import { StorageFactory } from '../storage/storage-factory';
 import { RouterManager } from './route-manager';
@@ -11,30 +11,22 @@ export class ConfigManager {
 
   public static applications: Map<string, ApplicationConfig> = new Map();
   public static applicationContext: Map<string, ContextDirector> = new Map();
-  public static plugins: Map<string, ContextPlugin> = new Map();
 
   private static backendStorage: ConfStorage;
 
   public static async initAllConfAndStartWatch() {
     try {
       this.backendStorage = await StorageFactory.createBackendStorage();
-      // step1, load all plugins to server
-      let plugins = await this.backendStorage.listAllPlugins();
-      for (let plugin of plugins) {
-        if (!plugin.disable) {
-          await this.enablePlugin(plugin);
-        }
-      }
-      // step2, load all context configuration applications
-      let applications = await this.backendStorage.listAllApplications();
+      let applications = await this.backendStorage.listAllConfigurations();
+
+      // todo normalize application for runtime, especially for MIXIN
+
       for (let application of applications) {
         if (!application.disable) {
           await this.enableApplication(application);
         }
       }
-
-      // step3,start watch configuration changes
-      this.startWatch();
+      this.startWatchConf();
     } catch (ex) {
       console.error(`fail to load configuration`, ex);
     }
@@ -44,8 +36,8 @@ export class ConfigManager {
     return this.backendStorage;
   }
 
-  private static startWatch() {
-    this.backendStorage.watchApplicationConf().subscribe(async (event) => {
+  private static startWatchConf() {
+    this.backendStorage.watchConf().subscribe(async (event) => {
       try {
         let conf = event.conf;
         debug(`application conf change got (${ConfEventType[event.eventType]}): ${conf.name}`);
@@ -53,22 +45,6 @@ export class ConfigManager {
           await this.disableApplication(conf.name);
         } else {
           await this.enableApplication(conf);
-        }
-      } catch (ex) {
-        console.error('Error when handling application changes: ', ex);
-      }
-    }, err => {
-      console.error('Error when watching application configurations: ', err);
-    }, () => {});
-
-    this.backendStorage.watchPluginConf().subscribe(async (event) => {
-      try {
-        let conf = event.conf;
-        debug(`plugin conf change got (${ConfEventType[event.eventType]}): ${conf.name}`);
-        if (event.eventType == ConfEventType.Deleted || conf.disable) {
-          await this.disablePlugin(conf.name);
-        } else {
-          await this.enablePlugin(conf);
         }
       } catch (ex) {
         console.error('Error when handling application changes: ', ex);
@@ -110,13 +86,4 @@ export class ConfigManager {
     }
   }
 
-  private static async enablePlugin(plugin: ContextPlugin) {
-    this.plugins.set(plugin.name, plugin);
-    // todo
-  }
-
-  private static async disablePlugin(name: string) {
-    this.plugins.delete(name);
-    // todo
-  }
 }

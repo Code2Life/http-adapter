@@ -4,7 +4,7 @@ import { FunctionResolver } from '../compiler/func-resolver';
 import { ModuleResolver } from '../compiler/module-resolver';
 import { TemplateResolver } from '../compiler/tmpl-resolver';
 import { constants } from '../constants';
-import { ApplicationConfig } from '../storage/model';
+import { ApplicationConfig } from '../model/application';
 import { Executor, FuncSet } from './executor';
 
 const debug = Debug('server:initialize-stage');

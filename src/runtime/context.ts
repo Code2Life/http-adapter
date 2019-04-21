@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import { EventEmitter } from 'events';
-import { ApplicationConfig } from '../storage/model';
+import { ApplicationConfig } from '../model/application';
 
 const debug = Debug('server:runtime-ctx');
 

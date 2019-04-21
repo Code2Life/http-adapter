@@ -1,61 +1,46 @@
 import Debug from 'debug';
 import { Context } from 'koa';
 import { constants } from '../constants';
-import { RouteConfig } from '../storage/model';
+import { ExtractionSpec, RouteConfig } from '../model/route';
 import { Executor, FuncSet } from './executor';
 
 const debug = Debug('server:extract-stage');
 
 export class ExtractStage extends Executor<boolean, RouteConfig> {
+
   async execute(ctx: Context): Promise<boolean> {
     // validate/filter, extract and set variables from header and body
-    let runtime = this.ctxRunEnv.getRunTimeEnv();
-    let routeName = this.envConf.name;
     let result = true;
-    for (let handler of this.envConf.extract.headerHandlers) {
-      let header = ctx.request.headers[handler.key];
-      if (handler.validate) {
-        let tmpValidateFunc = (<FuncSet>runtime)[constants.VERIFY_REQ_HEADER_PREFIX + routeName + handler.key];
-        if (typeof tmpValidateFunc === 'function') {
-          try {
-            let validateResult = await tmpValidateFunc(header, ctx.request);
-            if (!validateResult) {
-              throw new Error(`header validation not pass: ${handler.key}`);
-            }
-          } catch (ex) {
-            result = false;
-            this.ctxRunEnv.appendError(ex);
-            console.error(`Error when calling validate header function ${handler.key} in context ${this.envConf.name}`, ex);
-          }
-        }
-      }
-      this.ctxRunEnv.setPropertyToRunTime(handler.alias || handler.key, header);
-    }
-
-    // pass header validation, now process body
-    if (result) {
-      for (let handler of this.envConf.extract.bodyHandlers) {
-        let body = ctx.request.body[handler.key];
-        if (handler.validate) {
-          let tmpValidateFunc = (<FuncSet>runtime)[constants.VERIFY_REQ_BODY_PREFIX + routeName + handler.key];
-          if (typeof tmpValidateFunc === 'function') {
-            try {
-              let validateResult = await tmpValidateFunc(body, ctx.request);
-              if (!validateResult) {
-                throw new Error(`body validation not pass: ${handler.key}`);
-              }
-            } catch (ex) {
-              result = false;
-              this.ctxRunEnv.appendError(ex);
-              console.error(`Error when calling validate body function ${handler.key} in context ${this.envConf.name}`, ex);
-            }
-          }
-        }
-        this.ctxRunEnv.setPropertyToRunTime(handler.alias || handler.key, body);
-      }
+    try {
+      await this.validateAndExtractProperties(ctx, this.envConf.extract.headerHandlers, constants.VERIFY_REQ_HEADER_PREFIX, ctx.request.headers);
+      await this.validateAndExtractProperties(ctx, this.envConf.extract.bodyHandlers, constants.VERIFY_REQ_BODY_PREFIX, ctx.request.body);
+    } catch (ex) {
+      result = false;
+      this.ctxRunEnv.appendError(ex);
+      console.error(`Error when calling validation context ${this.envConf.name}`, ex);
     }
     debug(`${ctx.reqId}: finish request extraction`);
     return result;
   }
 
+  async validateAndExtractProperties(ctx: Context, spec: ExtractionSpec[], funcPrefix: string, extractSourceObj: any) {
+    let runtime = this.ctxRunEnv.getRunTimeEnv();
+    let routeName = this.envConf.name;
+    for (let handler of spec) {
+      let validateObj = extractSourceObj[handler.key];
+      if (handler.validate) {
+        let tmpValidateFunc = (<FuncSet>runtime)[funcPrefix + routeName + handler.key];
+        if (typeof tmpValidateFunc === 'function') {
+          let result = await tmpValidateFunc(validateObj, ctx.request);
+          if (!result) {
+            throw new Error(`validation not pass for prop ${handler.key} in route ${routeName}`)  
+          }
+        } else {
+          throw new Error(`invalid validation rule for prop ${handler.key} in route ${routeName}`)
+        }
+      }
+      // property extracts to runtime
+      this.ctxRunEnv.setPropertyToRunTime(handler.alias || handler.key, validateObj);
+    }
+  }
 }

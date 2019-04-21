@@ -1,9 +1,9 @@
 import Debug from 'debug';
 import { EventEmitter } from 'events';
 import { Context } from 'koa';
+import { ApplicationConfig } from '../model/application';
 import { RunTimeEnvironment } from '../runtime/context';
 import { ContextMetrics } from '../runtime/metrics';
-import { ApplicationConfig } from '../storage/model';
 import { ExtractStage } from './extract';
 import { InitializeStage } from './initialize';
 import { RelayStage } from './relay';

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ApplicationConfig, ContextPlugin } from './model';
+import { ApplicationConfig } from '../model/application';
 
 export enum StorageType {
   FILE_SYSTEM = 'file',
@@ -27,29 +27,24 @@ export class ConfEvent<T> {
 
 export abstract class ConfStorage {
 
-  abstract listAllPlugins(): Promise<ContextPlugin[]>;
+  abstract initialize(): Promise<void>;
 
-  abstract listAllApplications(): Promise<ApplicationConfig[]>;
+  // some storage types such as db need disconnect manually, make sure no resource leak
+  abstract dispose(): Promise<void>;
 
-  abstract findApplicationByName(appName: string): Promise<ApplicationConfig>;
+  abstract listAllConfigurations(): Promise<ApplicationConfig[]>;
 
-  abstract findPluginByName(): Promise<ContextPlugin>;
+  abstract findConfigurationByName(appName: string): Promise<ApplicationConfig>;
 
   abstract addOrUpdateApplicationConf(conf: ApplicationConfig): Promise<boolean>;
 
-  abstract addOrUpdatePluginConf(conf: ContextPlugin): Promise<boolean>;
+  abstract deleteApplicationConf(appName: string): Promise<boolean>;
 
-  abstract deleteApplicationConf(conf: ApplicationConfig): Promise<boolean>;
-
-  abstract deletePluginConf(conf: ApplicationConfig): Promise<boolean>;
-
-  abstract watchApplicationConf(): Observable<ConfEvent<ApplicationConfig>>;
-
-  abstract watchPluginConf(): Observable<ConfEvent<ContextPlugin>>;
+  abstract watchConf(): Observable<ConfEvent<ApplicationConfig>>;
 
   abstract loadSeparateContent(targetFile: string, confObj: ApplicationConfig): Promise<string>;
 
-  // abstract exportApplicationConf();
+  // abstract exportConf();
 
-  // abstract importApplicationConf();
+  // abstract importConf();
 }

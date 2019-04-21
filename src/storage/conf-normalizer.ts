@@ -1,12 +1,16 @@
 import Debug from 'debug';
 import { TSCompiler } from '../compiler/mini-compiler';
 import { ConfigManager } from '../manager/conf-manager';
-import { ApplicationConfig, CommonHttpMethod, ExtractionConfig, InitContextConfig, KVPair, MessageType } from './model';
+import { ApplicationConfig, InitContextConfig } from '../model/application';
+import { CommonHttpMethod, MessageType } from '../model/enums';
+import { ExtractionConfig } from '../model/route';
+import { KVPair } from '../model/types';
 
 const debug = Debug('server:conf-normalizer');
 
 export class ConfNormalizer {
 
+  // todo refactor 
   public static validateAndSetDefault4Application(rawObj: ApplicationConfig) {
     // validate and set default value for initContext section
     if (!rawObj.initContext) {

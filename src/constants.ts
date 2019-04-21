@@ -37,7 +37,7 @@ export const constants = {
 
   ROUTES_CONF_PATH: 'routes',
 
-  PLUGINS_DIR: '_plugins',
+  TRASH_DIR: '_trash',
 
   ROUTES_DIR: 'routes'
 };

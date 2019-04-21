@@ -16,10 +16,10 @@ Just route, filter, validate, transform, relay and response your HTTP requests.
 
 Setup your HTTP server in 3 minutes by a few YAML configurations and a few TS/JS code snippets.
 **Especially** suitable for:
-- HTTP adapter, such as transform webhook request to another
-- request relay, it could be HTTP proxy for another server
-- mock server, it could be a mock server if no relay configurations set
-- dynamic HTTP interface, as BFF(backend for frontend) or API Gateway
+- HTTP adapter, such as transform one Webhook request to another
+- Request relay, it could be HTTP proxy for another server
+- Mock server, it could be a mock server for development
+- Dynamic HTTP interface, as BFF(backend for frontend) or API Gateway
 
 ## Demo
 todo
@@ -67,8 +67,7 @@ todo
 - pre-installed config examples, and downloaded by cli 
 - document template grammar, and allow separate template file
 - configure UI and REST interface
-- separate RuntimeContext with AdapterConfig (1 -> N)
 - plugin / marketplace system, and plugin development
 - routing incoming websocket message
 - further logging / tracing / monitoring / metrics
-- transform to more form of outbound message, such as RPC Call, MQ Message
+- transform to more forms of outbound message, such as RPC Call, MQ Publishing

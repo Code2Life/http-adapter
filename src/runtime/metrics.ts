@@ -1,5 +1,6 @@
 import { Counter, Gauge, Summary } from 'prom-client';
-import { ApplicationConfig, RouteConfig } from '../storage/model';
+import { ApplicationConfig } from '../model/application';
+import { RouteConfig } from '../model/route';
 
 interface MetricsInfo {
   total: Counter;

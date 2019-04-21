@@ -1,6 +1,6 @@
 import { ModuleResolver } from '../../src/compiler/module-resolver';
+import { ApplicationConfig } from '../../src/model/application';
 import { RunTimeEnvironment } from '../../src/runtime/context';
-import { ApplicationConfig } from '../../src/storage/model';
 
 jest.setTimeout(60000);
 

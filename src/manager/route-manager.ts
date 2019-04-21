@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import Router from 'koa-router';
 import ContextDirector from '../executor/director';
-import { RouteConfig } from '../storage/model';
+import { RouteConfig } from '../model/route';
 
 const debug = Debug('server:router');
 

@@ -1,0 +1,18 @@
+author: Joey
+version: 1.0.0
+inboundType: http
+outboundType: http
+mixin:
+- name: audit-plugin
+  overrideConf:
+    mysqlAddr: mysql://localhost:3306
+initContext:
+  libraries:
+    lodash: _
+  constants:
+    token: 'global token from application context'
+    webhookSiteURL: https://webhook.site/8bd70130-f663-4c2f-ada4-42a65f6abbf6
+  initFunctions: 
+    init: functions/init.ts
+  functions: 
+    log: functions/log.ts

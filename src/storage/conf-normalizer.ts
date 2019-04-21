@@ -59,7 +59,8 @@ export class ConfNormalizer {
       } else {
         for (let relayReq of routeObj.relay) {
           relayReq.method = <CommonHttpMethod>(relayReq.method || 'get').toLocaleLowerCase();
-          relayReq.outboundType = relayReq.outboundType || MessageType.HTTP;
+          // if no outbound type set, use application default type
+          relayReq.outboundType = relayReq.outboundType || rawObj.outboundType;
           if (!relayReq.name || !relayReq.location) {
             throw new Error(`no name or url of relay request config ${rawObj.name} / ${routeObj.name}`);
           }

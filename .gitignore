@@ -63,6 +63,7 @@ typings/
 dist
 
 conf-dev
+conf/_trash
 
 docs
 

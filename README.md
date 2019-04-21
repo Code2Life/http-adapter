@@ -65,9 +65,10 @@ todo
 
 ## Todo
 - pre-installed config examples, and downloaded by cli
-- HTTP2.0 HTTPS support, 
+- HTTP2.0 HTTPS support
+- More storage types support
 - document template grammar, and allow separate template file
-- configure UI and REST interface
+- configure UI and REST interface, configure watch
 - mixin plugin / marketplace system, and plugin development, application version control
 - routing incoming websocket message
 - further logging / tracing / monitoring / metrics, eliminate console.log

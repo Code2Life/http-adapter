@@ -6,6 +6,7 @@
   <a href="https://www.codacy.com/app/Code2Life/http-adapter?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Code2Life/http-adapter&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/e93d8415d1074997abc36c2918f079e3" alt="Codacy Badge"></a>
   <a href="https://codebeat.co/projects/github-com-code2life-http-adapter-master"><img alt="codebeat badge" src="https://codebeat.co/badges/a2025aec-3af4-484e-8b2a-a0a597f69867" /></a>
   <a href="https://www.npmjs.com/package/node-adapter"><img src="https://img.shields.io/npm/v/node-adapter.svg" alt="Version"></a>
+  <a href="https://hub.docker.com/r/code2life/http-adapter"><img src="https://img.shields.io/docker/cloud/build/code2life/http-adapter.svg" alt="Version"></a>
   <a href="https://www.npmjs.com/package/node-adapter"><img src="https://img.shields.io/github/license/Code2Life/http-adapter.svg" alt="License"></a>
 </p>
 

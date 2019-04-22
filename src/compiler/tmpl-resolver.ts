@@ -26,7 +26,7 @@ export class TemplateResolver {
     let funcStr = `return \`${tmpl}\`;`;
     let func = new Function(constants.TEMPLATE_FUNC_PARAM, funcStr);
     func.prototype.name = prefix + key;
-    func.bind(ctxRunEnv);
+    func = func.bind(ctxRunEnv.getRunTimeEnv());
     ctxRunEnv.setPropertyToRunTime(prefix + key, func);
   }
 }

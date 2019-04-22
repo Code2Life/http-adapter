@@ -56,7 +56,7 @@ export class RelayStage extends Executor<void, RouteConfig> {
         let interceptorFunc = (<FuncSet>runtime)[constants.RELAY_INTERCEPTOR_FUNC_PREFIX + routeName + confIndex + interceptor];
         if (typeof interceptorFunc === 'function') {
           try {
-            axiosConf = await interceptorFunc(axiosConf, ctx);
+            await interceptorFunc(axiosConf, ctx);
           } catch (ex) {
             ex.message = `${ctx.reqId}: Error when executing interceptor ${interceptor} for ${routeName} - ${confIndex}: ${ex.message}`;
             throw ex;

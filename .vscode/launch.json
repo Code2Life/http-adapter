@@ -11,7 +11,7 @@
       "env": {
         "NODE_ENV": "development",
         "DEBUG": "server:*",
-        "CONF_PATH": "./conf-dev"
+        "CONF_PATH": "./conf"
       },
       "runtimeArgs": [
           "-r",

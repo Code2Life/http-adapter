@@ -40,7 +40,7 @@ export class FunctionResolver {
       console.error(`syntax error in function: ${key}, ${compiledFunc}, ${syntaxErr.message}`);
       throw new Error(`syntax error - ${key} - ${syntaxErr.message}`);
     }
-    ctxRunEnv.setPropertyToRunTime(prefix + key, tmpFunction.bind(ctxRunEnv));
+    ctxRunEnv.setPropertyToRunTime(prefix + key, tmpFunction.bind(ctxRunEnv.getRunTimeEnv()));
   }
 
   private static loadSingleFuncFromAST(ast: ts.Node) {

@@ -14,7 +14,7 @@ relay:
     original-accept-encoding: ${this.accept}    
     token-from-context: ${this.token}
   body: |-
-    { id: "${console.log(ctx.request) && ctx.params}", data: "demo" }
+    { id: "${ctx.params.userId}", data: "demo" }
   interceptors:
     relay-interceptor: functions/relay-interceptor.ts
 response:

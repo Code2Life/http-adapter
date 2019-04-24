@@ -9,6 +9,7 @@
     "kubectl",
     "protobuf",
     "quotemark",
+    "stringify",
     "tmpl",
     "webhook",
     "woff"

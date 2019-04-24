@@ -29,9 +29,6 @@ export abstract class ConfStorage {
 
   abstract initialize(): Promise<void>;
 
-  // some storage types such as db need disconnect manually, make sure no resource leak
-  abstract dispose(): Promise<void>;
-
   abstract listAllConfigurations(): Promise<ApplicationConfig[]>;
 
   abstract findConfigurationByName(appName: string): Promise<ApplicationConfig>;
@@ -44,6 +41,8 @@ export abstract class ConfStorage {
 
   abstract loadSeparateContent(targetFile: string, confObj: ApplicationConfig): Promise<string>;
 
+  // some storage types such as db need disconnect manually, make sure no resource leak
+  abstract dispose(): Promise<void>;
   // abstract exportConf();
 
   // abstract importConf();

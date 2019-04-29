@@ -7,20 +7,20 @@ extract:
     validate: val => val && val.indexOf('gzip') !== -1
   # bodyHandlers
 relay:
-- name: webhook.site
-  location: ${this.webhookSiteURL}
+- name: demoPost
+  location: ${this.httpPostTestURL}
   method: post
   headers:
-    original-acceipt-encoding: ${this.accept}    
+    original-accept-encoding: ${this.accept}    
     token-from-context: ${this.token}
   body: |-
-    { id: "${ctx.request.params.userId}" }
+    { id: "${ctx.params.userId}", data: "demo" }
   interceptors:
-    relay-interceptor: function/relay-interceptor.ts
+    relay-interceptor: functions/relay-interceptor.ts
 response:
   policy: 'afterRelay'
   headers:
     request-id: ${ctx.reqId}
   body: templates/response-body.tmpl
   interceptors:
-    response-interceptor: function/response-interceptor.js
+    response-interceptor: functions/response-interceptor.js

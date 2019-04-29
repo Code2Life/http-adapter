@@ -31,7 +31,7 @@ export class ResponseStage extends Executor<void, RouteConfig> {
 
     // send response back
     ctx.response.status = responseObj.statusCode;
-    ctx.headers = responseObj.headers;
+    Object.keys(responseObj.headers).length > 0 && ctx.set(responseObj.headers);
     ctx.body = responseObj.body;
     debug(`${ctx.reqId}: finish response composing`);
   }
@@ -59,11 +59,8 @@ export class ResponseStage extends Executor<void, RouteConfig> {
       let interceptorFunc = (<FuncSet>runtime)[constants.RESP_INTERCEPTOR_FUNC_PREFIX + routeName + interceptor];
       if (typeof interceptorFunc === 'function') {
         try {
-          const result = await interceptorFunc(responseObj, ctx);
-          if (!result || !result.statusCode) {
-            throw new Error('empty or invalid response Object got, please check return statement in interceptor');
-          }
-          responseObj = result;
+          await interceptorFunc(responseObj, ctx);
+          return responseObj;
         } catch (ex) {
           ex.message = `${ctx.reqId}: Error when executing interceptor ${interceptor} for ${routeName}: ${ex.message}`;
           throw ex;

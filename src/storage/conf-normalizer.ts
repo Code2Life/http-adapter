@@ -78,52 +78,62 @@ export class ConfNormalizer {
   }
 
   public static async loadRelatedTmplAndFuncFiles(confObj: ApplicationConfig) {
-    // todo load extra template files
-    await this.loadCodeInConf(confObj.initContext.initFunctions, confObj);
-    await this.loadCodeInConf(confObj.initContext.functions, confObj);
+    await this.loadCodeOrTmplInConf(confObj.initContext.initFunctions, confObj);
+    await this.loadCodeOrTmplInConf(confObj.initContext.functions, confObj);
 
     for (let route of confObj.routes) {
       for (let handler of route.extract.headerHandlers) {
         if (handler.validate) {
-          handler.validate = await this.loadCodeInConf(handler.validate, confObj) as string;
+          handler.validate = await this.loadCodeOrTmplInConf(handler.validate, confObj) as string;
         }
       }
       for (let handler of route.extract.bodyHandlers) {
         if (handler.validate) {
-          handler.validate = await this.loadCodeInConf(handler.validate, confObj) as string;
+          handler.validate = await this.loadCodeOrTmplInConf(handler.validate, confObj) as string;
         }
       }
       for (let relayReq of route.relay) {
+        relayReq.body = await this.loadCodeOrTmplInConf(relayReq.body || '', confObj, true) as string;
+        if (!relayReq.headers) {
+          relayReq.headers = {};
+        }
+        await this.loadCodeOrTmplInConf(relayReq.headers, confObj, true);
+        relayReq.location = await this.loadCodeOrTmplInConf(relayReq.location, confObj, true) as string;
         if (relayReq.interceptors) {
-          await this.loadCodeInConf(relayReq.interceptors, confObj);
+          await this.loadCodeOrTmplInConf(relayReq.interceptors, confObj);
         }
       }
+      if (!route.response.headers) {
+        route.response.headers = {};
+      }
+      await this.loadCodeOrTmplInConf(route.response.headers, confObj, true);
+      route.response.body = await this.loadCodeOrTmplInConf(route.response.body || '', confObj, true) as string;
       if (route.response.interceptors) {
-        await this.loadCodeInConf(route.response.interceptors, confObj);
+        await this.loadCodeOrTmplInConf(route.response.interceptors, confObj);
       }
     }
     return confObj;
   }
 
-  private static async loadCodeInConf(target: KVPair | string, confObj: ApplicationConfig) {
+  private static async loadCodeOrTmplInConf(target: KVPair | string, confObj: ApplicationConfig, isTemplate = false) {
     if (typeof target === 'string') {
-      return await this.loadSingleFuncOrTmplCode(target, confObj);
+      return await this.loadSingleFuncOrTmplCode(target, confObj, isTemplate);
     } else {
       for (let funcName in target) {
         let funcStr = target[funcName].trim();
-        target[funcName] = await this.loadSingleFuncOrTmplCode(funcStr, confObj);
+        target[funcName] = await this.loadSingleFuncOrTmplCode(funcStr, confObj, isTemplate);
       }
     }
     return target;
   }
 
-  private static async loadSingleFuncOrTmplCode(target: string, confObj: ApplicationConfig) {
+  private static async loadSingleFuncOrTmplCode(target: string, confObj: ApplicationConfig, isTemplate: boolean) {
     let content = target;
     // load content data from files
     if (target && (target.endsWith('.js') || target.endsWith('.ts') || target.endsWith('.tmpl'))) {
       content = await ConfigManager.storage.loadSeparateContent(target, confObj);
     }
-    if (target.endsWith('.tmpl')) {
+    if (isTemplate) {
       return content;
     }
     // parse TS/JS function using TS Compiler

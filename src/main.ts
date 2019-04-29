@@ -13,7 +13,7 @@ const { app, metricsInterval } = Application;
  * Get port from environment
  */
 
-const port = normalizePort(process.env.NODE_PORT || '3000');
+const port = normalizePort(process.env.PORT || process.env.NODE_PORT || '3000');
 // app.set('port', port);
 
 /**

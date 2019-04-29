@@ -1,0 +1,3 @@
+(msg) => {
+  console.log(msg);
+};

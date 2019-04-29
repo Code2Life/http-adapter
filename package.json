@@ -4,7 +4,7 @@
   "description": "A lightweight and extensible HTTP adapter, editable HTTP server, Webhook transformation, request relay platform. based on koa",
   "main": "src/main.ts",
   "scripts": {
-    "start": "node -r ts-node/register src/main.ts",
+    "start": "node dist/main.js",
     "test": "cross-env JEST_JUNIT_OUTPUT=test-result/result.xml jest --verbose --detectOpenHandles",
     "test_prod": "cross-env JEST_JUNIT_OUTPUT=test-result/result.xml jest --verbose --bail --ci --runInBand --reporters=default --reporters=jest-junit --detectOpenHandles --coverage",
     "dev": "cross-env CONF_PATH=./conf-dev DEBUG=server:* nodemon -r ts-node/register src/main.ts",

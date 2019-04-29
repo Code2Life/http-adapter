@@ -9,9 +9,10 @@ mixin:
 initContext:
   libraries:
     lodash: _
+    os: os
   constants:
     token: 'global token from application context'
-    webhookSiteURL: https://webhook.site/8bd70130-f663-4c2f-ada4-42a65f6abbf6
+    httpPostTestURL: http://httpbin.org/post
   initFunctions: 
     init: functions/init.ts
   functions: 

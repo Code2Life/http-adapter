@@ -4,6 +4,7 @@
     "resolveJsonModule": true,
     "module": "commonjs",
     "esModuleInterop": true,
+    "declaration": true,
     "target": "ES2017",
     "noImplicitAny": true,
     "moduleResolution": "node",

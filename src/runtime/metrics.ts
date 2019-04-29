@@ -13,7 +13,7 @@ const labelNames = ['application', 'route', 'path'];
 
 class RunTimeMetrics {
 
-  public envMetrics: MetricsInfo;
+  public envMetrics!: MetricsInfo;
 
   constructor() {
     this.initMetrics();

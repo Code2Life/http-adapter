@@ -114,6 +114,7 @@ function downloadServerCodeAndStart() {
 
 function startServer() {
   let server = fork(SERVER_FILE, [], {
+    env: process.env,
     stdio: 'inherit'
   });
   server.on('exit', (code, signal) => {

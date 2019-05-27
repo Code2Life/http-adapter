@@ -42,7 +42,9 @@ todo
 ### Install
 ```bash
 # by Docker (Recommended)
-docker run --restart always -p 3000:3000 -d --name http-adapter code2life/http-adapter:v1
+docker run --restart always -p 3000:3000 -d --name http-adapter code2life/http-adapter:v2
+# by Docker, mount CONF_PATH
+docker run --restart always -p 3000:3000 -d -e CONF_PATH=/conf -v /conf:/conf --name http-adapter code2life/http-adapter:v2
 
 # by Kubernetes
 kubectl apply -f https://raw.githubusercontent.com/Code2Life/http-adapter/master/build/kubernetes/deployment.yaml

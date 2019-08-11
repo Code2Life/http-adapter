@@ -1,1 +1,0 @@
-kubectl create configmap http-adapter-conf -n default --from-file ../../conf

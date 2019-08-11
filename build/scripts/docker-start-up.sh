@@ -1,0 +1,1 @@
+docker run -e CONF_PATH=/conf -e PORT=8088 -e SERVER_VERSION=1.0.4 -v /home/http-adapter-conf:/conf --restart always --net=host -d --name http-adapter code2life/http-adapter:1.0.2

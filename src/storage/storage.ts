@@ -3,9 +3,7 @@ import { ApplicationConfig } from '../model/application';
 
 export enum StorageType {
   FILE_SYSTEM = 'file',
-  MONGO = 'mongo',
-  ETCD = 'etcd',
-  CONSUL= 'consul'
+  MONGO = 'mongo'
 }
 
 export enum ConfEventType {

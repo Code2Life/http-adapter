@@ -33,7 +33,9 @@ spec:
         - name: CONF_PATH
           value: /conf
         - name: SERVER_VERSION
-          value: 1.0.4
+          value: 1.0.5
+        - name: DEBUG
+          value: server:*
         livenessProbe:
           tcpSocket:
             port: 8080
@@ -60,5 +62,3 @@ spec:
         hostPath: 
           path: /opt/http-adapter-conf
           type: DirectoryOrCreate
-      nodeSelector:
-        "app/http-adapter": "true"

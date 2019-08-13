@@ -12,7 +12,7 @@
         "NODE_ENV": "development",
         "DEBUG": "server:*",
         "CONF_PATH": "./conf",
-        "PRELOAD_CONF": "http://filecdn.code2life.top/zoom-alert-nws.zip"
+        "PRELOAD_CONF": ""
       },
       "runtimeArgs": [
           "-r",

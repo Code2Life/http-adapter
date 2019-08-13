@@ -6,6 +6,9 @@ import { collectDefaultMetrics, register } from 'prom-client';
 import { ConfigManager } from './manager/conf-manager';
 import { RouterManager } from './manager/route-manager';
 
+
+const PRELOAD_CONF_URL = process.env.PRELOAD_CONF || '';
+
 const METRICS_TIMEOUT = 5000;
 
 const app = new Koa();
@@ -28,7 +31,7 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 // load existing configurations from directory
-ConfigManager.initAllConfAndStartWatch();
+ConfigManager.initAllConfAndStartWatch(PRELOAD_CONF_URL);
 
 console.log('server started.');
 

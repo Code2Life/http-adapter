@@ -72,3 +72,5 @@ test-result
 cli/http-adapter*.js
 
 junit.xml
+
+conf

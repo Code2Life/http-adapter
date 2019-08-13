@@ -1,4 +1,6 @@
+import axios from 'axios';
 import Debug from 'debug';
+import unzipper from 'unzipper';
 import ContextDirector from '../executor/director';
 import { ApplicationConfig } from '../model/application';
 import { MessageType } from '../model/enums';
@@ -15,10 +17,11 @@ export class ConfigManager {
 
   private static backendStorage: ConfStorage;
 
-  public static async initAllConfAndStartWatch() {
+  public static async initAllConfAndStartWatch(preloadConfUrl: string) {
     try {
       this.backendStorage = await StorageFactory.createBackendStorage();
-      let applications = await this.backendStorage.listAllConfigurations();
+      let applications = await this.backendStorage.loadAllConfigurations();
+      await this.preloadApplications(preloadConfUrl);
 
       // todo normalize application for runtime, especially for MIXIN, merge configs
 
@@ -95,4 +98,29 @@ export class ConfigManager {
     }
   }
 
+  private static preloadApplications(preloadConfUrl: string) {
+    // request download body, unzip, list dir, foreach load conf, delete dir
+    return new Promise((resolve, reject) => {
+      if (preloadConfUrl == '') {
+        resolve();
+        return;
+      }
+      const tempRes = `temp_download_${Date.now().valueOf()}`;
+      axios({
+        url: preloadConfUrl,
+        method: 'GET',
+        responseType: 'stream',
+      }).then((res) => {
+        if (res.status !== 200) {
+          reject(new Error(`Can not download preload conf of (${preloadConfUrl}. status: ${res.status}`));
+          return;
+        }
+        const importConf = () => {
+          console.log(`${preloadConfUrl} => ${tempRes} downloaded, start preload conf import.`);
+          this.backendStorage.importConf(tempRes).then(() => resolve()).catch(err => reject(err));
+        };
+        res.data.pipe(unzipper.Extract({ path: tempRes })).on('close', importConf).on('error', (err: Error) => reject(err));
+      }).catch(err => reject(err));
+    });
+  }
 }

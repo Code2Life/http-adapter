@@ -23,7 +23,7 @@ async function startApplication(options) {
         SERVER_FILE = SERVER_FILE_PREFIX + designatedVersion + '.js';
         console.log(`User specify the version: ${SERVER_FILE}`);
       }
-      await downloadPreInstalledConf();
+      await checkConfDir();
       await downloadServerCodeAndStart();
     } catch (ex) {
       console.error(ex);
@@ -68,13 +68,12 @@ function setTargetVersionNumber() {
   });
 }
 
-function downloadPreInstalledConf() {
+function checkConfDir() {
   return new Promise((resolve, reject) => {
     let conf = fs.existsSync(process.env.CONF_PATH);
     if (!conf) {
       console.log(`No configurations found, initialize configurations`);
       fs.mkdirSync(process.env.CONF_PATH);
-      // todo download initial configurations as demo at first time
     }
     resolve();
   });

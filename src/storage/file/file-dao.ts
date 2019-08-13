@@ -1,6 +1,7 @@
 import Debug from 'debug';
 import { safeLoad } from 'js-yaml';
 import { fs } from 'mz';
+import * as fsExtra from 'fs-extra';
 import path from 'path';
 import { Observable } from 'rxjs';
 import { constants } from '../../constants';
@@ -45,7 +46,7 @@ export class FileStorage extends ConfStorage {
     }
   }
 
-  public async listAllConfigurations(): Promise<ApplicationConfig[]> {
+  public async loadAllConfigurations(): Promise<ApplicationConfig[]> {
     debug(`start list all configurations in ${this.confRoot}`);
     const paths = await fs.readdir(this.confRoot);
     const result = [];
@@ -53,14 +54,14 @@ export class FileStorage extends ConfStorage {
       const fullPath = path.join(this.confRoot, subPath);
       const stat = await fs.lstat(fullPath);
       if (stat.isDirectory() && subPath !== constants.TRASH_DIR) {
-        const conf = await this.findConfigurationByName(subPath);
+        const conf = await this.loadConfigurationByName(subPath);
         result.push(conf);
       }
     }
     return result;
   }
 
-  public async findConfigurationByName(appName: string): Promise<ApplicationConfig> {
+  public async loadConfigurationByName(appName: string): Promise<ApplicationConfig> {
     const appDir = path.join(this.confRoot, appName);
     const files = await fs.readdir(appDir);
     for (let subPath of files) {
@@ -128,6 +129,19 @@ export class FileStorage extends ConfStorage {
   public async loadSeparateContent(target: string, conf: ApplicationConfig) {
     let buffer = await fs.readFile(path.join(this.confRoot, conf.name, target));
     return buffer.toString().trim();
+  }
+
+  public async importConf(tempDir: string): Promise<void> {
+    const apps = await fsExtra.readdir(tempDir);
+    for (const app of apps) {
+      const dest = path.join(this.confRoot, app);
+      if (fsExtra.existsSync(dest)) {
+        await fsExtra.remove(dest);
+      }
+      await fsExtra.move(path.join(tempDir, app), dest);
+      await this.loadConfigurationByName(app);
+    }
+    await fsExtra.remove(tempDir);
   }
 
   public dispose(): Promise<void> {

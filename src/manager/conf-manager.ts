@@ -21,7 +21,8 @@ export class ConfigManager {
     try {
       this.backendStorage = await StorageFactory.createBackendStorage();
       let applications = await this.backendStorage.loadAllConfigurations();
-      await this.preloadApplications(preloadConfUrl);
+      let preloadApps = await this.preloadApplications(preloadConfUrl);
+      applications = applications.concat(preloadApps);
 
       // todo normalize application for runtime, especially for MIXIN, merge configs
 
@@ -98,11 +99,11 @@ export class ConfigManager {
     }
   }
 
-  private static preloadApplications(preloadConfUrl: string) {
+  private static preloadApplications(preloadConfUrl: string): Promise<ApplicationConfig[]> {
     // request download body, unzip, list dir, foreach load conf, delete dir
     return new Promise((resolve, reject) => {
       if (preloadConfUrl == '') {
-        resolve();
+        resolve([]);
         return;
       }
       const tempRes = `temp_download_${Date.now().valueOf()}`;
@@ -117,7 +118,7 @@ export class ConfigManager {
         }
         const importConf = () => {
           console.log(`${preloadConfUrl} => ${tempRes} downloaded, start preload conf import.`);
-          this.backendStorage.importConf(tempRes).then(() => resolve()).catch(err => reject(err));
+          this.backendStorage.importConf(tempRes).then(resApps => resolve(resApps)).catch(err => reject(err));
         };
         res.data.pipe(unzipper.Extract({ path: tempRes })).on('close', importConf).on('error', (err: Error) => reject(err));
       }).catch(err => reject(err));

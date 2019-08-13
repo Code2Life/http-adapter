@@ -131,17 +131,20 @@ export class FileStorage extends ConfStorage {
     return buffer.toString().trim();
   }
 
-  public async importConf(tempDir: string): Promise<void> {
+  public async importConf(tempDir: string): Promise<ApplicationConfig[]> {
     const apps = await fsExtra.readdir(tempDir);
+    const result = [];
     for (const app of apps) {
       const dest = path.join(this.confRoot, app);
       if (fsExtra.existsSync(dest)) {
         await fsExtra.remove(dest);
       }
       await fsExtra.move(path.join(tempDir, app), dest);
-      await this.loadConfigurationByName(app);
+      let loaded = await this.loadConfigurationByName(app);
+      result.push(loaded);
     }
     await fsExtra.remove(tempDir);
+    return result;
   }
 
   public dispose(): Promise<void> {

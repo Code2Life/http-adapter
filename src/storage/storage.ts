@@ -43,7 +43,7 @@ export abstract class ConfStorage {
   // abstract exportConf();
 
   // from unzipped dir to storage
-  abstract importConf(tempDir: string): Promise<void>;
+  abstract importConf(tempDir: string): Promise<ApplicationConfig[]>;
 
   // some storage types such as db need disconnect manually, make sure no resource leak
   abstract dispose(): Promise<void>;

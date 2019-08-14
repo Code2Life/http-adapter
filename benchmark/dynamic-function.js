@@ -51,4 +51,3 @@ console.log('duration: ' + (Date.now() - start) + ' ms');
 // at Function.Module.runMain (internal/modules/cjs/loader.js:774:12)
 // at executeUserCode (internal/bootstrap/node.js:499:15)
 // at startMainThreadExecution (internal/bootstrap/node.js:436:3)
-// ➜  http-adapter git:(master) ✗ 

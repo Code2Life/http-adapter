@@ -28,7 +28,10 @@ export class ExtractStage extends Executor<boolean, RouteConfig> {
     let runtime = this.ctxRunEnv.getRunTimeEnv();
     let routeName = this.envConf.name;
     for (let handler of spec) {
-      let validateObj = extractSourceObj[handler.key];
+      let validateObj = extractSourceObj;
+      if (handler.key) {
+        validateObj = extractSourceObj[handler.key];
+      }
       if (handler.validate) {
         let tmpValidateFunc = (<FuncSet>runtime)[funcPrefix + routeName + handler.key];
         if (typeof tmpValidateFunc === 'function') {
@@ -41,7 +44,9 @@ export class ExtractStage extends Executor<boolean, RouteConfig> {
         }
       }
       // property extracts to runtime
-      this.ctxRunEnv.setPropertyToRunTime(handler.alias || handler.key, validateObj);
+      if (handler.key) {
+        this.ctxRunEnv.setPropertyToRunTime(handler.alias || handler.key, validateObj);
+      }
     }
   }
 }

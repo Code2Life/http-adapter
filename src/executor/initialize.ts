@@ -71,15 +71,15 @@ export class InitializeStage extends Executor<void, ApplicationConfig> {
 
   private generateExtractStageFunctions() {
     for (let routeConf of this.envConf.routes) {
-      this.generateValidateFunctions(routeConf.extract.headerHandlers, routeConf.name);
-      this.generateValidateFunctions(routeConf.extract.bodyHandlers, routeConf.name);
+      this.generateValidateFunctions(routeConf.extract.headerHandlers, routeConf.name, constants.VERIFY_REQ_HEADER_PREFIX);
+      this.generateValidateFunctions(routeConf.extract.bodyHandlers, routeConf.name, constants.VERIFY_REQ_BODY_PREFIX);
     }
   }
 
-  private generateValidateFunctions(spec: ExtractionSpec[], routeName: string) {
+  private generateValidateFunctions(spec: ExtractionSpec[], routeName: string, prefix: string) {
     for (let handler of spec) {
       if (handler.validate) {
-        FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, constants.VERIFY_REQ_HEADER_PREFIX + routeName);
+        FunctionResolver.compileAndLoadSingleFunction(handler.key, handler.validate, this.ctxRunEnv, prefix + routeName);
       }
     }
   }

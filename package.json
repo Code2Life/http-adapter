@@ -1,6 +1,6 @@
 {
   "name": "node-adapter",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A lightweight and extensible HTTP adapter, editable HTTP server, Webhook transformation, request relay platform. based on koa",
   "main": "src/main.ts",
   "scripts": {

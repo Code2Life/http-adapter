@@ -43,16 +43,6 @@ export class ConfNormalizer {
         headerHandlers: [],
         bodyHandlers: []
       }, routeObj.extract);
-      for (let handler of routeObj.extract.headerHandlers) {
-        if (!handler.key) {
-          throw new Error(`no name of header extraction handler in ${rawObj.name} / ${routeObj.name}`);
-        }
-      }
-      for (let handler of routeObj.extract.bodyHandlers) {
-        if (!handler.key) {
-          throw new Error(`no name of header extraction handler ${rawObj.name} / ${routeObj.name}`);
-        }
-      }
 
       if (!routeObj.relay || !(routeObj.relay instanceof Array)) {
         routeObj.relay = [];

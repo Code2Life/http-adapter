@@ -65,7 +65,7 @@ export class RelayStage extends Executor<void, RouteConfig> {
       }
     }
     // no actual call if magic dummy URL set, this could prevent real http request being sent
-    if (location !== constants.NO_RELAY_DUMMY_URL) {
+    if (location !== constants.NO_RELAY_DUMMY_URL && axiosConf.url !== constants.NO_RELAY_DUMMY_URL) {
       return await axios(axiosConf);
     }
   }

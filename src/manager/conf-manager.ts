@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import Debug from 'debug';
 import unzipper from 'unzipper';
 import ContextDirector from '../executor/director';
@@ -99,29 +99,40 @@ export class ConfigManager {
     }
   }
 
-  private static preloadApplications(preloadConfUrl: string): Promise<ApplicationConfig[]> {
+  private static async preloadApplications(preloadConfUrl: string): Promise<ApplicationConfig[]> {
     // request download body, unzip, list dir, foreach load conf, delete dir
-    return new Promise((resolve, reject) => {
+    try {
       if (preloadConfUrl == '') {
-        resolve([]);
-        return;
+        return [];
       }
-      const tempRes = `temp_download_${Date.now().valueOf()}`;
-      axios({
-        url: preloadConfUrl,
-        method: 'GET',
-        responseType: 'stream',
-      }).then((res) => {
+      let resultApps: ApplicationConfig[] = [];
+      let downloadList = preloadConfUrl.split(';');
+      for (let url of downloadList) {
+        const tempRes = `temp_download_${Math.random()}_${Date.now().valueOf()}`;
+        const res = await axios({
+          url,
+          method: 'GET',
+          responseType: 'stream',
+        });
         if (res.status !== 200) {
-          reject(new Error(`Can not download preload conf of (${preloadConfUrl}. status: ${res.status}`));
-          return;
+          console.error(`Can not download preload conf of (${url}. status: ${res.status}, skip.`);
+        } else {
+          await this.extractFromStream(res, tempRes);
+          console.log(`${url} => ${tempRes} downloaded, start preload conf import.`);
+          let apps = await this.backendStorage.importConf(tempRes);
+          resultApps = resultApps.concat(apps);
         }
-        const importConf = () => {
-          console.log(`${preloadConfUrl} => ${tempRes} downloaded, start preload conf import.`);
-          this.backendStorage.importConf(tempRes).then(resApps => resolve(resApps)).catch(err => reject(err));
-        };
-        res.data.pipe(unzipper.Extract({ path: tempRes })).on('close', importConf).on('error', (err: Error) => reject(err));
-      }).catch(err => reject(err));
+      }
+      return resultApps;
+    } catch (ex) {
+      console.error(`Can not download preload conf of (${preloadConfUrl}.`, ex);
+      return [];
+    }
+  }
+
+  private static async extractFromStream(res: AxiosResponse, dist: string) {
+    return new Promise((resolve, reject) => {
+      res.data.pipe(unzipper.Extract({ path: dist })).on('close', () => resolve()).on('error', (err: Error) => reject(err));
     });
   }
 }

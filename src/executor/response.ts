@@ -10,6 +10,9 @@ const debug = Debug('server:response-stage');
 export class ResponseStage extends Executor<void, RouteConfig> {
 
   async execute(ctx: Context): Promise<void> {
+    if (ctx.finishProcessing) {
+      return;
+    }
     // compose and send response back to origin client
     let respConf = this.envConf.response;
     let routeName = this.envConf.name;

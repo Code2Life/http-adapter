@@ -36,11 +36,14 @@ export class ExtractStage extends Executor<boolean, RouteConfig> {
         let tmpValidateFunc = (<FuncSet>runtime)[funcPrefix + routeName + handler.key];
         if (typeof tmpValidateFunc === 'function') {
           let result = await tmpValidateFunc(validateObj, ctx.request);
+          if (ctx.finishProcessing) {
+            return;
+          }
           if (!result) {
-            throw new Error(`${ctx.reqId}: validation not pass for prop ${handler.key} in route ${routeName}`);
+            throw new Error(`${ctx.reqId}: validation not pass for prop ${handler.key || '_all'} in route ${routeName}`);
           }
         } else {
-          throw new Error(`${ctx.reqId}: invalid validation rule for prop ${handler.key} in route ${routeName}`);
+          throw new Error(`${ctx.reqId}: invalid validation rule for prop ${handler.key || '_all'} in route ${routeName}`);
         }
       }
       // property extracts to runtime

@@ -11,6 +11,9 @@ const debug = Debug('server:relay-stage');
 export class RelayStage extends Executor<void, RouteConfig> {
 
   async execute(ctx: Context): Promise<void> {
+    if (ctx.finishProcessing) {
+      return;
+    }
     // compose and send requests to other servers
     let relayResultMap = new Map<string, AxiosResponse>();
     let cnt = 0;
@@ -48,7 +51,7 @@ export class RelayStage extends Executor<void, RouteConfig> {
 
     // step1, replace template in url, body and header
     this.replaceTemplate(ctx, runtime, axiosConf, routeName, confIndex);
-    debug(`${ctx.reqId}: processing relay request (${name}) - ${sendMethod} ${location}`);
+    debug(`${ctx.reqId}: processing relay request (${name}) - ${sendMethod} ${axiosConf.url}`);
 
     // step2, call interceptors to process request before sending
     if (interceptors) {

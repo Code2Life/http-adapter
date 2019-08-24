@@ -74,3 +74,5 @@ cli/http-adapter*.js
 junit.xml
 
 conf
+
+dev.sh

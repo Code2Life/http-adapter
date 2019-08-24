@@ -11,6 +11,7 @@ import { ResponseStage } from './response';
 import uuid = require('uuid');
 
 const debug = Debug('server:director');
+const trace = Debug('trace:http');
 
 export default class ContextDirector {
 
@@ -61,6 +62,7 @@ export default class ContextDirector {
       ctx.reqId = uuid.v4();
       ctx.startTime = Date.now();
       debug(`${ctx.reqId}: ${ctx.method} ${ctx.url} at ${ctx.startTime}`);
+      trace(`${ctx.reqId}: ${JSON.stringify(ctx.headers)} \n ${ctx.reqId}: ${JSON.stringify(ctx.request.body)}`);
       try {
         if (conf.hostname && (ctx.request.hostname !== conf.hostname)) {
           debug(`${ctx.reqId}: skip routing because hostname not match.`);

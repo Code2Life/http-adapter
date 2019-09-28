@@ -7,6 +7,18 @@ import { KVPair } from '../model/types';
 const debug = Debug('server:compiler:module-resolver');
 const MAX_INSTALL_TIME = 120000;
 
+declare const __non_webpack_require__: any;
+
+const isDevEnv = typeof __non_webpack_require__ === 'undefined';
+
+let nativeRequire: any;
+
+if (isDevEnv) {
+  nativeRequire = require;
+} else {
+  nativeRequire = __non_webpack_require__;
+}
+
 export class ModuleResolver {
 
   private static errorModuleCache = new Map<string, boolean>();
@@ -29,11 +41,11 @@ export class ModuleResolver {
               this.errorModuleCache.set(moduleName, true);
             }
           }
-          moduleObj = require(moduleName);
+          moduleObj = nativeRequire(moduleName);
           this.installedModuleCache.set(moduleName, true);
         } catch (ex) {
           this.errorModuleCache.set(moduleName, true);
-          console.error('load module dependency error: ' + ex.message);
+          console.error('load module dependency error: ' + ex.message + '\n' + ex.stack);
         }
       }
       ctxRunEnv.setPropertyToRunTime(alias, moduleObj);
@@ -43,11 +55,11 @@ export class ModuleResolver {
   private static async dynamicInstallModule(moduleName: string): Promise<boolean> {
     return new Promise<boolean>((resolve, _) => {
       try {
-        require(moduleName);
+        nativeRequire(moduleName);
         resolve(true);
       } catch (ex) {
-        // none-existing or something error with the module
-        const cwd = path.resolve(__dirname, '../../node_modules');
+        // none-existing or something error with the module, reuse
+        const cwd = process.cwd();
         // install module with timeout
         exec('npm install ' + moduleName, {
           cwd, timeout: MAX_INSTALL_TIME

@@ -14,7 +14,7 @@ export enum ConfEventType {
 
 export class ConfEvent<T> {
 
-  public conf: T;
+  public conf: T | undefined;
   public eventType: ConfEventType;
 
   constructor(eventType: ConfEventType, conf: T) {

@@ -7,6 +7,7 @@ import { MessageType } from '../model/enums';
 import { ConfEventType, ConfStorage } from '../storage/storage';
 import { StorageFactory } from '../storage/storage-factory';
 import { RouterManager } from './route-manager';
+import { filter } from 'rxjs/operators';
 
 const debug = Debug('server:config-manager');
 
@@ -42,9 +43,11 @@ export class ConfigManager {
   }
 
   private static startWatchConf() {
-    this.backendStorage.watchConf().subscribe(async (event) => {
+    this.backendStorage.watchConf().pipe(
+      filter(event => !!event.conf)
+    ).subscribe(async (event) => {
       try {
-        let conf = event.conf;
+        let conf = event.conf!;
         debug(`application conf change got (${ConfEventType[event.eventType]}): ${conf.name}`);
         if (event.eventType == ConfEventType.Deleted || conf.disable) {
           await this.disableApplication(conf.name);

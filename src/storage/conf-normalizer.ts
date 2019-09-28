@@ -16,11 +16,6 @@ export class ConfNormalizer {
     if (!rawObj.initContext) {
       rawObj.initContext = <InitContextConfig>{};
     }
-    // init default libraries (lodash axios installed to all applications)
-    rawObj.initContext.libraries = Object.assign({
-      lodash: '_',
-      axios: 'axios'
-    }, rawObj.initContext.libraries);
     rawObj.initContext.constants = rawObj.initContext.constants || {};
     rawObj.initContext.initFunctions = rawObj.initContext.initFunctions || {};
     // default as HTTP context

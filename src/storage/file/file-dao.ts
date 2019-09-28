@@ -8,19 +8,20 @@ import { constants } from '../../constants';
 import { ApplicationConfig } from '../../model/application';
 import { RouteConfig } from '../../model/route';
 import { ConfNormalizer } from '../conf-normalizer';
-import { ConfEvent, ConfStorage } from '../storage';
+import { ConfEvent, ConfStorage, ConfEventType } from '../storage';
 import { safeDump } from 'js-yaml';
+import Chokdiar from 'chokidar';
 
 const debug = Debug('server:fs-storage');
 
-  /**
-   * @remark load configurations as meta data when startup
-   * conf directory should follow the hierarchy:
-   * - conf/<application>
-   * - conf/<application>/routes/**<route-name>-config.yaml
-   * - conf/<application>/context.yaml conf/<application>/**.tmpl
-   * - conf/<application>/**<func-name>.js|ts
-   */
+/**
+ * @remark load configurations as meta data when startup
+ * conf directory should follow the hierarchy:
+ * - conf/<application>
+ * - conf/<application>/routes/**<route-name>-config.yaml
+ * - conf/<application>/context.yaml conf/<application>/**.tmpl
+ * - conf/<application>/**<func-name>.js|ts
+ */
 export class FileStorage extends ConfStorage {
 
   private confRoot: string;
@@ -122,7 +123,41 @@ export class FileStorage extends ConfStorage {
   public watchConf(): Observable<ConfEvent<ApplicationConfig>> {
     // todo support file watch of all applications
     return new Observable<ConfEvent<ApplicationConfig>>(observer => {
-      observer.complete();
+      const watcher = Chokdiar.watch(this.confRoot, {
+        ignored: /(^|[\/\\])\../,
+        ignoreInitial: true
+      }).on('all', async (event, fullPath) => {
+        const shortPath = path.relative(this.confRoot, fullPath);
+        const relativePaths = shortPath.split(/[\/\\]+/);
+        debug(`config change event: ${event} - [${shortPath}]`);
+
+        // ignore addDir, and root path (not application level) changes
+        if (relativePaths.length < 2 || event === 'addDir') {
+          return;
+        }
+        if (event === 'unlink' || event === 'unlinkDir') {
+          observer.next({
+            eventType: ConfEventType.Deleted,
+            conf: undefined
+          });
+        } else {
+          const appName = relativePaths[0];
+          try {
+            debug(`try reload configuration for app [${appName}]`);
+            const conf = await this.loadConfigurationByName(appName);
+            debug(`configuration fetched, start hot-reload for app [${appName}] ${conf}`);
+            observer.next({
+              eventType: event === 'add' ? ConfEventType.Created : ConfEventType.Updated,
+              conf
+            });
+          } catch (ex) {
+            console.error(`failed to load changes from files, caused by [${fullPath} - ${event}] \n ${ex.message} \n ${ex.stack}`);
+          }
+        }
+      }).on('error', (err) => {
+        watcher.close();
+        observer.error(err);
+      });
     });
   }
 

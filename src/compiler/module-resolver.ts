@@ -7,17 +7,9 @@ import { KVPair } from '../model/types';
 const debug = Debug('server:compiler:module-resolver');
 const MAX_INSTALL_TIME = 120000;
 
-declare const __non_webpack_require__: any;
-
-const isDevEnv = typeof __non_webpack_require__ === 'undefined';
-
-let nativeRequire: any;
-
-if (isDevEnv) {
-  nativeRequire = require;
-} else {
-  nativeRequire = __non_webpack_require__;
-}
+const isDevEnv = require.toString().indexOf('mod.require') !== -1 ||
+  require.toString().indexOf('native code') !== -1;
+console.log(`intialize module_resolver. ${isDevEnv ? 'raw ts mode' : 'webpack dist mode'}`);
 
 export class ModuleResolver {
 
@@ -41,7 +33,12 @@ export class ModuleResolver {
               this.errorModuleCache.set(moduleName, true);
             }
           }
-          moduleObj = nativeRequire(moduleName);
+          if (isDevEnv) {
+            moduleObj = require(moduleName);
+          } else {
+            // @ts-ignore
+            moduleObj = __non_webpack_require__(moduleName);
+          }
           this.installedModuleCache.set(moduleName, true);
         } catch (ex) {
           this.errorModuleCache.set(moduleName, true);
@@ -55,7 +52,12 @@ export class ModuleResolver {
   private static async dynamicInstallModule(moduleName: string): Promise<boolean> {
     return new Promise<boolean>((resolve, _) => {
       try {
-        nativeRequire(moduleName);
+        if (isDevEnv) {
+          require(moduleName);
+        } else {
+          // @ts-ignore
+          __non_webpack_require__(moduleName);
+        }
         resolve(true);
       } catch (ex) {
         // none-existing or something error with the module, reuse

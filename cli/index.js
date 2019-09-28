@@ -51,12 +51,12 @@ function setTargetVersionNumber() {
         reject(new Error(`Can not fetch latest version source repo, status: ${res.statusCode}`));
         return;
       }
-      let total = Buffer.from('');
+      let total = [];
       res.on('data', buffer => {
-        total += buffer;
+        total.push(buffer);
       });
       res.on('end', () => {
-        let version = JSON.parse(total.toString()).version;
+        let version = JSON.parse(Buffer.concat(total).toString()).version;
         console.log(`Got latest version info: ${version}`);
         SERVER_FILE = SERVER_FILE_PREFIX + version + '.js';
         resolve();

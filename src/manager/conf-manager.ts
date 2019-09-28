@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import Debug from 'debug';
+import { debounceTime, filter } from 'rxjs/operators';
 import unzipper from 'unzipper';
 import ContextDirector from '../executor/director';
 import { ApplicationConfig } from '../model/application';
@@ -7,7 +8,6 @@ import { MessageType } from '../model/enums';
 import { ConfEventType, ConfStorage } from '../storage/storage';
 import { StorageFactory } from '../storage/storage-factory';
 import { RouterManager } from './route-manager';
-import { filter } from 'rxjs/operators';
 
 const debug = Debug('server:config-manager');
 
@@ -44,7 +44,8 @@ export class ConfigManager {
 
   private static startWatchConf() {
     this.backendStorage.watchConf().pipe(
-      filter(event => !!event.conf)
+      filter(event => !!event.conf),
+      debounceTime(500)
     ).subscribe(async (event) => {
       try {
         let conf = event.conf!;
@@ -59,7 +60,7 @@ export class ConfigManager {
       }
     }, err => {
       console.error('Error when watching application configurations: ', err);
-    }, () => {});
+    }, () => { });
   }
 
   private static async enableApplication(conf: ApplicationConfig) {

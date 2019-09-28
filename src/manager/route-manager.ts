@@ -19,7 +19,7 @@ export class RouterManager {
   }
 
   public static deleteRouteByName(name: string) {
-    this.router.delete(name);
+    this.router.stack = this.router.stack.filter(s => s.name && s.name !== name);
     this.routerMap.delete(name);
   }
 }

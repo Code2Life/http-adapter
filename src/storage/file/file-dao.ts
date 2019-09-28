@@ -131,28 +131,30 @@ export class FileStorage extends ConfStorage {
         const relativePaths = shortPath.split(/[\/\\]+/);
         debug(`config change event: ${event} - [${shortPath}]`);
 
+        // delete application directory, this could not happen, since file is watched
+        if (relativePaths.length == 1 && event === 'unlinkDir') {
+          observer.next({
+            eventType: ConfEventType.Deleted,
+            conf: {
+              name: relativePaths[0]
+            } as ApplicationConfig
+          });
+        }
         // ignore addDir, and root path (not application level) changes
         if (relativePaths.length < 2 || event === 'addDir') {
           return;
         }
-        if (event === 'unlink' || event === 'unlinkDir') {
+        const appName = relativePaths[0];
+        try {
+          debug(`try reload configuration for app [${appName}]`);
+          const conf = await this.loadConfigurationByName(appName);
+          debug(`configuration fetched, start hot-reload for app [${appName}]`);
           observer.next({
-            eventType: ConfEventType.Deleted,
-            conf: undefined
+            eventType: event === 'add' ? ConfEventType.Created : ConfEventType.Updated,
+            conf
           });
-        } else {
-          const appName = relativePaths[0];
-          try {
-            debug(`try reload configuration for app [${appName}]`);
-            const conf = await this.loadConfigurationByName(appName);
-            debug(`configuration fetched, start hot-reload for app [${appName}] ${conf}`);
-            observer.next({
-              eventType: event === 'add' ? ConfEventType.Created : ConfEventType.Updated,
-              conf
-            });
-          } catch (ex) {
-            console.error(`failed to load changes from files, caused by [${fullPath} - ${event}] \n ${ex.message} \n ${ex.stack}`);
-          }
+        } catch (ex) {
+          console.error(`failed to load changes from files, caused by [${fullPath} - ${event}] \n ${ex.message} \n ${ex.stack}`);
         }
       }).on('error', (err) => {
         watcher.close();

@@ -39,6 +39,8 @@ export const constants = {
 
   TRASH_DIR: '_trash',
 
+  MODULE_DIR: 'node_modules',
+
   ROUTES_DIR: 'routes',
 
   // Koa context object for template replacing

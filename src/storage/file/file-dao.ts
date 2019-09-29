@@ -10,7 +10,7 @@ import { RouteConfig } from '../../model/route';
 import { ConfNormalizer } from '../conf-normalizer';
 import { ConfEvent, ConfStorage, ConfEventType } from '../storage';
 import { safeDump } from 'js-yaml';
-import Chokdiar from 'chokidar';
+import Chokidar from 'chokidar';
 
 const debug = Debug('server:fs-storage');
 
@@ -54,7 +54,7 @@ export class FileStorage extends ConfStorage {
     for (let subPath of paths) {
       const fullPath = path.join(this.confRoot, subPath);
       const stat = await fs.lstat(fullPath);
-      if (stat.isDirectory() && subPath !== constants.TRASH_DIR) {
+      if (stat.isDirectory() && subPath !== constants.TRASH_DIR && subPath !== constants.MODULE_DIR) {
         const conf = await this.loadConfigurationByName(subPath);
         result.push(conf);
       }
@@ -123,8 +123,8 @@ export class FileStorage extends ConfStorage {
   public watchConf(): Observable<ConfEvent<ApplicationConfig>> {
     // todo support file watch of all applications
     return new Observable<ConfEvent<ApplicationConfig>>(observer => {
-      const watcher = Chokdiar.watch(this.confRoot, {
-        ignored: /(^|[\/\\])\../,
+      const watcher = Chokidar.watch(this.confRoot, {
+        ignored: [/(^|[\/\\])\../, (path: string) => path.includes('node_modules')],
         ignoreInitial: true
       }).on('all', async (event, fullPath) => {
         const shortPath = path.relative(this.confRoot, fullPath);

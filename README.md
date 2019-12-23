@@ -1,4 +1,4 @@
-<p align="center"><a href="javascript:void(0);" target="_blank" rel="noreferrer"><img width="300" src="http://filecdn.code2life.top/http_adapter_logo_transparent.png" alt="Http Adapter logo"></a></p>
+<p align="center"><a href="javascript:void(0);" target="_blank" rel="noreferrer"><img width="300" src="http://filecdn.code2life.top/logo_transparent.png" alt="Http Adapter logo"></a></p>
 
 <p align="center">
   <a href="https://circleci.com/gh/code2life/http-adapter/tree/master"><img src="https://circleci.com/gh/Code2Life/http-adapter.svg?style=svg" alt="Build Status"></a>

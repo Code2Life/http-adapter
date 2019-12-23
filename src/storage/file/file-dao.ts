@@ -123,7 +123,7 @@ export class FileStorage extends ConfStorage {
   public watchConf(): Observable<ConfEvent<ApplicationConfig>> {
     // todo support file watch of all applications
     return new Observable<ConfEvent<ApplicationConfig>>(observer => {
-      const watcher = Chokidar.watch(this.confRoot, {
+      const watcher = (global as any).watcher = Chokidar.watch(this.confRoot, {
         ignored: [/(^|[\/\\])\../, (path: string) => path.includes('node_modules')],
         ignoreInitial: true
       }).on('all', async (event, fullPath) => {

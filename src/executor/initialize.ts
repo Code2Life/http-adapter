@@ -3,6 +3,7 @@ import Debug from 'debug';
 import { FunctionResolver } from '../compiler/func-resolver';
 import { ModuleResolver } from '../compiler/module-resolver';
 import { TemplateResolver } from '../compiler/tmpl-resolver';
+import { MixinResolver } from '../compiler/mixin-resolver';
 import { constants } from '../constants';
 import { ApplicationConfig } from '../model/application';
 import { ExtractionSpec } from '../model/route';
@@ -35,6 +36,7 @@ export class InitializeStage extends Executor<void, ApplicationConfig> {
       this.ctxRunEnv, constants.INIT_FUNC_PREFIX);
     FunctionResolver.compileAndLoadFunctionObj(this.envConf.initContext.functions, this.ctxRunEnv);
     // call initTemplates and initFunctions, to initialize constants and context
+    MixinResolver.loadMixins(this.envConf.mixins, this.ctxRunEnv);
     await this.invokeInitFunctions();
   }
 

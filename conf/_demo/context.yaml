@@ -2,7 +2,7 @@ author: Joey
 version: 1.0.0
 inboundType: http
 outboundType: http
-mixin:
+mixins:
 - name: audit-plugin
   overrideConf:
     mysqlAddr: mysql://localhost:3306

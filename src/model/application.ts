@@ -20,7 +20,7 @@ export interface ApplicationConfig {
   port?: number;
 
   /* mixin means this app depend on other apps, this is the key to impl plugins */
-  mixin: MixinApplication[];
+  mixins: MixinApplication[];
   createdAt: Date;
   updatedAt: Date;
 }

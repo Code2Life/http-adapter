@@ -1,6 +1,5 @@
 import { exec } from 'child_process';
 import Debug from 'debug';
-import path from 'path';
 import { RunTimeEnvironment } from '../runtime/context';
 import { KVPair } from '../model/types';
 
